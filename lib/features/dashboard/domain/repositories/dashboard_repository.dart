@@ -1,0 +1,13 @@
+import 'package:dartz/dartz.dart';
+import 'package:urban_smart_farming/core/utils/failures.dart';
+import 'package:urban_smart_farming/features/dashboard/domain/entities/sensor_reading_entity.dart';
+import 'package:urban_smart_farming/features/dashboard/domain/entities/actuator_status_entity.dart';
+
+/// Repositorio de Dashboard
+abstract class DashboardRepository {
+  /// Obtiene las lecturas actuales de los sensores
+  Future<Either<Failure, SensorReadingEntity>> getSensorReadings();
+
+  /// Obtiene el estado de los actuadores
+  Future<Either<Failure, List<ActuatorStatusEntity>>> getActuatorStatuses();
+}

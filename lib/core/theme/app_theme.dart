@@ -49,11 +49,11 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: surfaceLight,
         elevation: 0,
-        centerTitle: false,
+        centerTitle: true,
         iconTheme: IconThemeData(color: textPrimary),
         titleTextStyle: TextStyle(
           color: textPrimary,
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: FontWeight.w600,
           fontFamily: 'Roboto',
         ),
@@ -63,8 +63,8 @@ class AppTheme {
       // Card - estilo limpio con sombras suaves
       cardTheme: CardTheme(
         color: surfaceLight,
-        elevation: 1,
-        shadowColor: Colors.black.withValues(alpha: 0.1),
+        elevation: 4,
+        shadowColor: Colors.black.withValues(alpha: 0.2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 

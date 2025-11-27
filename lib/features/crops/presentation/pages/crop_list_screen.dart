@@ -17,7 +17,7 @@ class CropListScreen extends StatelessWidget {
       create: (_) => getIt<CropsBloc>()..add(LoadCrops()),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Mis Cultivos'),
+          title: const Text('Mi Hogar', style: TextStyle(fontSize: 22)),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings),
@@ -236,7 +236,7 @@ class _CropCard extends StatelessWidget {
                 child: Icon(
                   Icons.eco,
                   color: Theme.of(context).colorScheme.primary,
-                  size: 28,
+                  size: 30,
                 ),
               ),
               const SizedBox(height: 12),

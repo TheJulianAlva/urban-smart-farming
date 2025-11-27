@@ -172,8 +172,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 backgroundColor:
                                     actuator.isOn
-                                        ? AppTheme.primaryGreen.withOpacity(0.2)
-                                        : Colors.grey.withOpacity(0.2),
+                                        ? AppTheme.primaryGreen.withValues(
+                                          alpha: 0.2,
+                                        )
+                                        : Colors.grey.withValues(alpha: 0.2),
                               ),
                             ),
                           ),

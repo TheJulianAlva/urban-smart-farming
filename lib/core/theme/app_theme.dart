@@ -35,12 +35,10 @@ class AppTheme {
         primaryContainer: primaryGreenDark,
         secondary: primaryGreenLight,
         surface: surfaceDark,
-        background: backgroundDark,
         error: statusDanger,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: textPrimary,
-        onBackground: textPrimary,
         onError: Colors.white,
       ),
 
@@ -134,17 +132,17 @@ class AppTheme {
 
       // Switch
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primaryGreen;
           }
           return textSecondary;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return primaryGreenLight.withOpacity(0.5);
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primaryGreenLight.withValues(alpha: 0.5);
           }
-          return textHint.withOpacity(0.3);
+          return textHint.withValues(alpha: 0.3);
         }),
       ),
 

@@ -72,7 +72,7 @@ class AlertsScreen extends StatelessWidget {
             leading: CircleAvatar(
               backgroundColor: _getSeverityColor(
                 alert['severity'] as String,
-              ).withOpacity(0.2),
+              ).withValues(alpha: 0.2),
               child: Icon(
                 _getSeverityIcon(alert['severity'] as String),
                 color: _getSeverityColor(alert['severity'] as String),

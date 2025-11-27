@@ -5,6 +5,7 @@ enum SensorStatus { optimal, warning, danger, offline }
 
 /// Lectura de sensores
 class SensorReadingEntity extends Equatable {
+  final String cropId; // ID del cultivo asociado
   final double temperature; // °C
   final double humidity; // %
   final double lightLevel; // Lux
@@ -16,6 +17,7 @@ class SensorReadingEntity extends Equatable {
   final SensorStatus phStatus;
 
   const SensorReadingEntity({
+    required this.cropId,
     required this.temperature,
     required this.humidity,
     required this.lightLevel,
@@ -29,6 +31,7 @@ class SensorReadingEntity extends Equatable {
 
   @override
   List<Object?> get props => [
+    cropId,
     temperature,
     humidity,
     lightLevel,

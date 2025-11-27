@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 
-/// Tema oscuro personalizado para Urban Smart Farming
-/// Utiliza tonos verdes vibrantes para representar agricultura
+/// Tema claro y moderno para Urban Smart Farming
+/// Inspirado en aplicaciones populares con diseño limpio y sencillo
 class AppTheme {
-  // Colores primarios - tonos verdes para agricultura
+  // Colores primarios - tonos verdes para agricultura (más suaves)
   static const Color primaryGreen = Color(0xFF4CAF50);
-  static const Color primaryGreenLight = Color(0xFF66BB6A);
+  static const Color primaryGreenLight = Color(0xFF81C784);
   static const Color primaryGreenDark = Color(0xFF388E3C);
 
-  // Colores de fondo oscuro
-  static const Color backgroundDark = Color(0xFF121212);
-  static const Color surfaceDark = Color(0xFF1E1E1E);
-  static const Color surfaceDarkElevated = Color(0xFF2C2C2C);
+  // Colores de fondo claros
+  static const Color backgroundLight = Color(0xFFF5F5F5);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color surfaceLightElevated = Color(0xFFFAFAFA);
 
   // Colores de estado para métricas
   static const Color statusOptimal = Color(0xFF4CAF50);
-  static const Color statusWarning = Color(0xFFFFA726);
-  static const Color statusDanger = Color(0xFFEF5350);
+  static const Color statusWarning = Color(0xFFFF9800);
+  static const Color statusDanger = Color(0xFFF44336);
 
   // Colores de texto
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB0B0B0);
-  static const Color textHint = Color(0xFF757575);
+  static const Color textPrimary = Color(0xFF212121);
+  static const Color textSecondary = Color(0xFF757575);
+  static const Color textHint = Color(0xFF9E9E9E);
 
-  /// Tema oscuro de la aplicación
-  static ThemeData get darkTheme {
+  /// Tema claro de la aplicación
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
 
       // Color scheme
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: primaryGreen,
-        primaryContainer: primaryGreenDark,
+        primaryContainer: primaryGreenLight,
         secondary: primaryGreenLight,
-        surface: surfaceDark,
+        surface: surfaceLight,
         error: statusDanger,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
@@ -43,35 +43,43 @@ class AppTheme {
       ),
 
       // Scaffold
-      scaffoldBackgroundColor: backgroundDark,
+      scaffoldBackgroundColor: backgroundLight,
 
-      // AppBar
+      // AppBar - estilo moderno y limpio
       appBarTheme: const AppBarTheme(
-        backgroundColor: surfaceDark,
+        backgroundColor: surfaceLight,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         iconTheme: IconThemeData(color: textPrimary),
         titleTextStyle: TextStyle(
           color: textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w600,
+          fontFamily: 'Roboto',
         ),
+        surfaceTintColor: Colors.transparent,
       ),
 
-      // Card
+      // Card - estilo limpio con sombras suaves
       cardTheme: CardTheme(
-        color: surfaceDark,
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: surfaceLight,
+        elevation: 1,
+        shadowColor: Colors.black.withValues(alpha: 0.1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 
-      // Bottom Navigation Bar
+      // Bottom Navigation Bar - estilo moderno
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: surfaceDark,
+        backgroundColor: surfaceLight,
         selectedItemColor: primaryGreen,
         unselectedItemColor: textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
+        selectedLabelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: TextStyle(fontSize: 12),
       ),
 
       // Floating Action Button
@@ -79,19 +87,20 @@ class AppTheme {
         backgroundColor: primaryGreen,
         foregroundColor: Colors.white,
         elevation: 4,
+        shape: CircleBorder(),
       ),
 
-      // Input Decoration
+      // Input Decoration - estilo limpio
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceDarkElevated,
+        fillColor: surfaceLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -106,9 +115,13 @@ class AppTheme {
           borderSide: const BorderSide(color: statusDanger, width: 2),
         ),
         hintStyle: const TextStyle(color: textHint),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
 
-      // Elevated Button
+      // Elevated Button - estilo moderno
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryGreen,
@@ -126,23 +139,23 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primaryGreen,
-          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
 
-      // Switch
+      // Switch - estilo moderno
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return primaryGreen;
           }
-          return textSecondary;
+          return const Color(0xFFBDBDBD);
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return primaryGreenLight.withValues(alpha: 0.5);
           }
-          return textHint.withValues(alpha: 0.3);
+          return const Color(0xFFE0E0E0);
         }),
       ),
 
@@ -152,18 +165,26 @@ class AppTheme {
         unselectedLabelColor: textSecondary,
         indicatorColor: primaryGreen,
         indicatorSize: TabBarIndicatorSize.tab,
+        labelStyle: TextStyle(fontWeight: FontWeight.w600),
       ),
 
-      // Chip
+      // Chip - estilo limpio
       chipTheme: ChipThemeData(
-        backgroundColor: surfaceDarkElevated,
-        selectedColor: primaryGreen,
+        backgroundColor: const Color(0xFFF5F5F5),
+        selectedColor: primaryGreenLight,
         labelStyle: const TextStyle(color: textPrimary),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
-      // Text Theme
+      // Divider
+      dividerTheme: const DividerThemeData(
+        color: Color(0xFFE0E0E0),
+        thickness: 1,
+        space: 1,
+      ),
+
+      // Text Theme - tipografía moderna y legible
       textTheme: const TextTheme(
         displayLarge: TextStyle(
           fontSize: 32,
@@ -187,7 +208,7 @@ class AppTheme {
         ),
         headlineSmall: TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: textPrimary,
         ),
         titleLarge: TextStyle(

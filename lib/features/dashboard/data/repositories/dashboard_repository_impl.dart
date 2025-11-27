@@ -8,36 +8,104 @@ import 'package:urban_smart_farming/features/dashboard/domain/repositories/dashb
 
 /// Implementación mock del repositorio de dashboard
 class DashboardRepositoryImpl implements DashboardRepository {
-  final Random _random = Random();
-  final List<ActuatorStatusEntity> _actuators = [
-    ActuatorStatusEntity(
-      id: '1',
-      name: 'Bomba de Riego',
-      type: ActuatorType.pump,
-      isOn: false,
-      lastUpdate: DateTime.now(),
-    ),
-    ActuatorStatusEntity(
-      id: '2',
-      name: 'Luz LED',
-      type: ActuatorType.light,
-      isOn: true,
-      lastUpdate: DateTime.now(),
-    ),
-  ];
+  // Map de actuadores por cultivo
+  final Map<String, List<ActuatorStatusEntity>> _actuatorsByCrop = {
+    '1': [
+      ActuatorStatusEntity(
+        id: '1-1',
+        cropId: '1',
+        name: 'Bomba de Riego',
+        type: ActuatorType.pump,
+        isOn: false,
+        lastUpdate: DateTime.now(),
+      ),
+      ActuatorStatusEntity(
+        id: '1-2',
+        cropId: '1',
+        name: 'Luz LED',
+        type: ActuatorType.light,
+        isOn: true,
+        lastUpdate: DateTime.now(),
+      ),
+    ],
+    '2': [
+      ActuatorStatusEntity(
+        id: '2-1',
+        cropId: '2',
+        name: 'Bomba Hidropónica',
+        type: ActuatorType.pump,
+        isOn: true,
+        lastUpdate: DateTime.now(),
+      ),
+      ActuatorStatusEntity(
+        id: '2-2',
+        cropId: '2',
+        name: 'Luz de Crecimiento',
+        type: ActuatorType.light,
+        isOn: true,
+        lastUpdate: DateTime.now(),
+      ),
+    ],
+    '3': [
+      ActuatorStatusEntity(
+        id: '3-1',
+        cropId: '3',
+        name: 'Riego por Goteo',
+        type: ActuatorType.pump,
+        isOn: false,
+        lastUpdate: DateTime.now(),
+      ),
+    ],
+  };
 
   @override
-  Future<Either<Failure, SensorReadingEntity>> getSensorReadings() async {
+  Future<Either<Failure, SensorReadingEntity>> getSensorReadings(
+    String cropId,
+  ) async {
     // Simular latencia
     await Future.delayed(const Duration(milliseconds: 500));
 
-    // Generar valores aleatorios dentro de rangos realistas
-    final temp = 20.0 + _random.nextDouble() * 8.0; // 20-28°C
-    final humidity = 45.0 + _random.nextDouble() * 25.0; // 45-70%
-    final light = 300.0 + _random.nextDouble() * 500.0; // 300-800 Lux
-    final ph = 5.5 + _random.nextDouble() * 1.5; // 5.5-7.0
+    // Generar valores diferentes según el cultivo
+    final seed = cropId.hashCode;
+    final cropRandom = Random(seed + DateTime.now().millisecondsSinceEpoch);
+
+    // Rangos base diferentes por cultivo para variedad
+    double tempBase, humidityBase, lightBase, phBase;
+
+    switch (cropId) {
+      case '1': // Tomates - prefieren más calor
+        tempBase = 24.0;
+        humidityBase = 55.0;
+        lightBase = 600.0;
+        phBase = 6.0;
+        break;
+      case '2': // Lechugas - prefieren más frescura
+        tempBase = 21.0;
+        humidityBase = 65.0;
+        lightBase = 400.0;
+        phBase = 6.2;
+        break;
+      case '3': // Albahaca - condiciones moderadas
+        tempBase = 23.0;
+        humidityBase = 60.0;
+        lightBase = 500.0;
+        phBase = 6.5;
+        break;
+      default:
+        tempBase = 22.0;
+        humidityBase = 60.0;
+        lightBase = 500.0;
+        phBase = 6.3;
+    }
+
+    // Agregar variación
+    final temp = tempBase + (cropRandom.nextDouble() - 0.5) * 4.0;
+    final humidity = humidityBase + (cropRandom.nextDouble() - 0.5) * 10.0;
+    final light = lightBase + (cropRandom.nextDouble() - 0.5) * 200.0;
+    final ph = phBase + (cropRandom.nextDouble() - 0.5) * 0.8;
 
     final reading = SensorReadingEntity(
+      cropId: cropId,
       temperature: temp,
       humidity: humidity,
       lightLevel: light,
@@ -53,10 +121,14 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<Either<Failure, List<ActuatorStatusEntity>>>
-  getActuatorStatuses() async {
+  Future<Either<Failure, List<ActuatorStatusEntity>>> getActuatorStatuses(
+    String cropId,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return Right(List.from(_actuators));
+
+    // Retornar actuadores del cultivo específico o lista vacía
+    final actuators = _actuatorsByCrop[cropId] ?? [];
+    return Right(List.from(actuators));
   }
 
   /// Determina el estado basado en los rangos óptimos

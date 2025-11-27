@@ -1,91 +1,64 @@
 import 'package:flutter/material.dart';
 
-/// Pantalla de Control y Automatización (S-03)
-/// Placeholder simple para el mockup inicial
+/// Pantalla de control para un cultivo específico (S-03)
+/// Placeholder
 class ControlScreen extends StatelessWidget {
-  const ControlScreen({super.key});
+  final String cropId;
+
+  const ControlScreen({required this.cropId, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Control y Automatización')),
-      body: ListView(
+      appBar: AppBar(title: const Text('Control')),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        children: [
-          // Sección de control manual
-          Text(
-            'Control Manual',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 16),
-
-          SwitchListTile(
-            title: const Text('Bomba de Riego'),
-            subtitle: const Text('Sistema de riego automático'),
-            secondary: const Icon(Icons.water),
-            value: false,
-            onChanged: (value) {},
-          ),
-
-          SwitchListTile(
-            title: const Text('Luz LED'),
-            subtitle: const Text('Iluminación artificial'),
-            secondary: const Icon(Icons.lightbulb),
-            value: true,
-            onChanged: (value) {},
-          ),
-
-          SwitchListTile(
-            title: const Text('Ventilación'),
-            subtitle: const Text('Sistema de ventilación'),
-            secondary: const Icon(Icons.air),
-            value: false,
-            onChanged: (value) {},
-          ),
-
-          const SizedBox(height: 32),
-
-          // Sección de reglas automáticas
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Reglas Automáticas',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              IconButton(
-                icon: const Icon(Icons.add_circle),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Funcionalidad disponible próximamente'),
-                    ),
-                  );
-                },
-                tooltip: 'Añadir regla',
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.rule),
-              title: const Text('Si Humedad < 50%'),
-              subtitle: const Text('Entonces: Activar riego 5 min'),
-              trailing: Switch(value: true, onChanged: (value) {}),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Gestión de Cultivo',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-          ),
-
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.rule),
-              title: const Text('Si Luz < 400 Lux'),
-              subtitle: const Text('Entonces: Encender LED'),
-              trailing: Switch(value: true, onChanged: (value) {}),
+            const SizedBox(height: 8),
+            Text(
+              'Cultivo ID: $cropId',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Text(
+              'Control Manual',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            Card(
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    title: const Text('Bomba de Riego'),
+                    subtitle: const Text('Control manual de irrigación'),
+                    value: false,
+                    onChanged: (value) {},
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: const Text('Luz LED'),
+                    subtitle: const Text('Iluminación suplementaria'),
+                    value: true,
+                    onChanged: (value) {},
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: const Text('Ventilación'),
+                    subtitle: const Text('Control de flujo de aire'),
+                    value: false,
+                    onChanged: (value) {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

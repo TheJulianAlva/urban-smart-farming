@@ -5,9 +5,11 @@ import 'package:urban_smart_farming/features/dashboard/domain/entities/actuator_
 
 /// Repositorio de Dashboard
 abstract class DashboardRepository {
-  /// Obtiene las lecturas actuales de los sensores
-  Future<Either<Failure, SensorReadingEntity>> getSensorReadings();
+  /// Obtiene las lecturas actuales de los sensores de un cultivo específico
+  Future<Either<Failure, SensorReadingEntity>> getSensorReadings(String cropId);
 
-  /// Obtiene el estado de los actuadores
-  Future<Either<Failure, List<ActuatorStatusEntity>>> getActuatorStatuses();
+  /// Obtiene el estado de los actuadores de un cultivo específico
+  Future<Either<Failure, List<ActuatorStatusEntity>>> getActuatorStatuses(
+    String cropId,
+  );
 }

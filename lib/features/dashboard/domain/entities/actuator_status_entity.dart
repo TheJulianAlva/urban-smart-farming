@@ -10,6 +10,7 @@ enum ActuatorType {
 /// Estado de un actuador
 class ActuatorStatusEntity extends Equatable {
   final String id;
+  final String cropId; // ID del cultivo asociado
   final String name;
   final ActuatorType type;
   final bool isOn;
@@ -17,6 +18,7 @@ class ActuatorStatusEntity extends Equatable {
 
   const ActuatorStatusEntity({
     required this.id,
+    required this.cropId,
     required this.name,
     required this.type,
     required this.isOn,
@@ -24,10 +26,11 @@ class ActuatorStatusEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, name, type, isOn, lastUpdate];
+  List<Object?> get props => [id, cropId, name, type, isOn, lastUpdate];
 
   ActuatorStatusEntity copyWith({
     String? id,
+    String? cropId,
     String? name,
     ActuatorType? type,
     bool? isOn,
@@ -35,6 +38,7 @@ class ActuatorStatusEntity extends Equatable {
   }) {
     return ActuatorStatusEntity(
       id: id ?? this.id,
+      cropId: cropId ?? this.cropId,
       name: name ?? this.name,
       type: type ?? this.type,
       isOn: isOn ?? this.isOn,

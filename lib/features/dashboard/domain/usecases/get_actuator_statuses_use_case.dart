@@ -9,7 +9,9 @@ class GetActuatorStatusesUseCase {
 
   GetActuatorStatusesUseCase(this.repository);
 
-  Future<Either<Failure, List<ActuatorStatusEntity>>> call() async {
-    return await repository.getActuatorStatuses();
+  Future<Either<Failure, List<ActuatorStatusEntity>>> call(
+    String cropId,
+  ) async {
+    return await repository.getActuatorStatuses(cropId);
   }
 }

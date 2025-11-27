@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:urban_smart_farming/core/routing/app_router.dart';
 import 'package:urban_smart_farming/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:urban_smart_farming/features/auth/presentation/bloc/auth_event.dart';
 import 'package:urban_smart_farming/features/auth/presentation/bloc/auth_state.dart';
@@ -55,8 +54,8 @@ class _AuthScreenState extends State<AuthScreen>
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
-            // Navegar al dashboard tras autenticación exitosa
-            context.go(AppRouter.main);
+            // Navegar a la lista de cultivos tras autenticación exitosa
+            context.go('/crops');
           } else if (state is AuthError) {
             // Mostrar error
             ScaffoldMessenger.of(context).showSnackBar(

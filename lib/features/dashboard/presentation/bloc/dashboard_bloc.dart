@@ -6,14 +6,16 @@ import 'package:urban_smart_farming/features/dashboard/domain/usecases/get_actua
 import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_event.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_state.dart';
 
-/// BLoC del Dashboard con auto-refresh
+/// BLoC del Dashboard con auto-refresh para un cultivo específico
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
+  final String cropId;
   final GetSensorDataUseCase getSensorDataUseCase;
   final GetActuatorStatusesUseCase getActuatorStatusesUseCase;
 
   Timer? _refreshTimer;
 
   DashboardBloc({
+    required this.cropId,
     required this.getSensorDataUseCase,
     required this.getActuatorStatusesUseCase,
   }) : super(DashboardInitial()) {
@@ -40,8 +42,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   }
 
   Future<void> _loadData(Emitter<DashboardState> emit) async {
-    final sensorResult = await getSensorDataUseCase();
-    final actuatorsResult = await getActuatorStatusesUseCase();
+    // Pasar cropId a los use cases
+    final sensorResult = await getSensorDataUseCase(cropId);
+    final actuatorsResult = await getActuatorStatusesUseCase(cropId);
 
     sensorResult.fold((failure) => emit(DashboardError(failure.message)), (
       sensorData,

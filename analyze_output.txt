@@ -1,0 +1,9 @@
+Analyzing urban_smart_farming...                                
+
+   info - Parameter 'message' could be a super parameter - lib\core\utils\failures.dart:10:9 - use_super_parameters
+   info - Parameter 'message' could be a super parameter - lib\core\utils\failures.dart:15:9 - use_super_parameters
+   info - Parameter 'message' could be a super parameter - lib\core\utils\failures.dart:21:9 - use_super_parameters
+   info - Parameter 'message' could be a super parameter - lib\core\utils\failures.dart:27:9 - use_super_parameters
+warning - The value of the field '_random' isn't used - lib\features\dashboard\data\repositories\dashboard_repository_impl.dart:11:16 - unused_field
+
+5 issues found. (ran in 3.1s)

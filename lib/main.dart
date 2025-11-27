@@ -28,7 +28,7 @@ class MainApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Urban Smart Farming',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
+        theme: AppTheme.lightTheme,
         routerConfig: AppRouter.router,
       ),
     );

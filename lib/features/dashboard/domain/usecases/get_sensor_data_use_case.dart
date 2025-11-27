@@ -9,7 +9,7 @@ class GetSensorDataUseCase {
 
   GetSensorDataUseCase(this.repository);
 
-  Future<Either<Failure, SensorReadingEntity>> call() async {
-    return await repository.getSensorReadings();
+  Future<Either<Failure, SensorReadingEntity>> call(String cropId) async {
+    return await repository.getSensorReadings(cropId);
   }
 }

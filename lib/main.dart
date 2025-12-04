@@ -4,7 +4,7 @@ import 'package:urban_smart_farming/core/di/di_container.dart';
 import 'package:urban_smart_farming/core/routing/app_router.dart';
 import 'package:urban_smart_farming/core/theme/app_theme.dart';
 import 'package:urban_smart_farming/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_bloc.dart';
+import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,7 @@ class MainApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => getIt<AuthBloc>()),
-        BlocProvider(create: (_) => getIt<DashboardBloc>()),
+        BlocProvider(create: (_) => getIt<AiDiagnosisBloc>()),
       ],
       child: MaterialApp.router(
         title: 'Urban Smart Farming',

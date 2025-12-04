@@ -21,19 +21,16 @@ class DashboardScreen extends StatelessWidget {
       create:
           (_) => getIt<DashboardBloc>(param1: cropId)..add(LoadDashboardData()),
       child: Scaffold(
+        /*
         appBar: AppBar(
           title: const Text('Dashboard'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/crops'),
-          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () => context.push(AppRouter.settings),
             ),
           ],
-        ),
+        ),*/
         body: BlocBuilder<DashboardBloc, DashboardState>(
           builder: (context, state) {
             if (state is DashboardLoading) {

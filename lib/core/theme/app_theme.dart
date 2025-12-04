@@ -61,7 +61,7 @@ class AppTheme {
       ),
 
       // Card - estilo limpio con sombras suaves
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surfaceLight,
         elevation: 4,
         shadowColor: Colors.black.withValues(alpha: 0.2),
@@ -160,12 +160,12 @@ class AppTheme {
       ),
 
       // Tab Bar
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: primaryGreen,
         unselectedLabelColor: textSecondary,
         indicatorColor: primaryGreen,
         indicatorSize: TabBarIndicatorSize.tab,
-        labelStyle: TextStyle(fontWeight: FontWeight.w600),
+        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
       ),
 
       // Chip - estilo limpio

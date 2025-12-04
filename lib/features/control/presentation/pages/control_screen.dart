@@ -10,7 +10,7 @@ class ControlScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Control')),
+      // appBar: AppBar(title: const Text('Control')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

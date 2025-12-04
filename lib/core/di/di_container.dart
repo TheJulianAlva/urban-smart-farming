@@ -19,6 +19,8 @@ import 'package:urban_smart_farming/features/dashboard/domain/usecases/get_senso
 import 'package:urban_smart_farming/features/dashboard/domain/usecases/get_actuator_statuses_use_case.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 
+import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_bloc.dart';
+
 /// Service locator para Dependency Injection
 final getIt = GetIt.instance;
 
@@ -70,4 +72,7 @@ Future<void> setupDependencies() async {
       getActuatorStatusesUseCase: getIt(),
     ),
   );
+
+  // AiDiagnosisBloc - placeholder sin lógica real
+  getIt.registerFactory(() => AiDiagnosisBloc());
 }

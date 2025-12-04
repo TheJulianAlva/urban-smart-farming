@@ -7,7 +7,7 @@ import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_event
 import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_state.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
 
-/// Pantalla principal de lista de cultivos
+/// Pantalla principal "Mi Jardín" - Dashboard global de cultivos
 class CropListScreen extends StatelessWidget {
   const CropListScreen({super.key});
 
@@ -17,13 +17,19 @@ class CropListScreen extends StatelessWidget {
       create: (_) => getIt<CropsBloc>()..add(LoadCrops()),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Mi Hogar', style: TextStyle(fontSize: 22)),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () => context.push('/settings'),
-            ),
-          ],
+          title: Row(
+            children: [
+              const Text('Hola, Usuario', style: TextStyle(fontSize: 20)),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  // TODO: Navigate to notifications/alerts
+                },
+              ),
+            ],
+          ),
+          automaticallyImplyLeading: false,
         ),
         body: BlocBuilder<CropsBloc, CropsState>(
           builder: (context, state) {
@@ -83,16 +89,9 @@ class CropListScreen extends StatelessWidget {
             return const SizedBox.shrink();
           },
         ),
-        floatingActionButton: BlocBuilder<CropsBloc, CropsState>(
-          builder: (context, state) {
-            // Deshabilitar si se alcanzó el límite
-            final canAdd = state is CropsLoaded && state.crops.length < 10;
-
-            return FloatingActionButton(
-              onPressed: canAdd ? () => _showCreateCropDialog(context) : null,
-              child: const Icon(Icons.add),
-            );
-          },
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => context.push('/crops/create'),
+          child: const Icon(Icons.add),
         ),
       ),
     );
@@ -124,79 +123,12 @@ class CropListScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => _showCreateCropDialog(context),
+            onPressed: () => context.push('/crops/create'),
             icon: const Icon(Icons.add),
             label: const Text('Crear Cultivo'),
           ),
         ],
       ),
-    );
-  }
-
-  void _showCreateCropDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    final plantTypeController = TextEditingController();
-    final locationController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: const Text('Nuevo Cultivo'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre',
-                    hintText: 'Ej: Tomates del Balcón',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: plantTypeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tipo de Planta',
-                    hintText: 'Ej: Tomate Cherry',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: locationController,
-                  decoration: const InputDecoration(
-                    labelText: 'Ubicación',
-                    hintText: 'Ej: Balcón Norte',
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (nameController.text.isNotEmpty &&
-                      locationController.text.isNotEmpty) {
-                    context.read<CropsBloc>().add(
-                      CreateCropRequested(
-                        name: nameController.text,
-                        plantType:
-                            plantTypeController.text.isEmpty
-                                ? 'Sin especificar'
-                                : plantTypeController.text,
-                        location: locationController.text,
-                      ),
-                    );
-                    Navigator.of(dialogContext).pop();
-                  }
-                },
-                child: const Text('Crear'),
-              ),
-            ],
-          ),
     );
   }
 }

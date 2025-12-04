@@ -55,7 +55,7 @@ class _AuthScreenState extends State<AuthScreen>
         listener: (context, state) {
           if (state is AuthSuccess) {
             // Navegar a la lista de cultivos tras autenticación exitosa
-            context.go('/crops');
+            context.go('/');
           } else if (state is AuthError) {
             // Mostrar error
             ScaffoldMessenger.of(context).showSnackBar(

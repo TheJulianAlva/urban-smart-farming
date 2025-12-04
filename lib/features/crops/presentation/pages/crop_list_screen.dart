@@ -6,6 +6,8 @@ import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_bloc.
 import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_event.dart';
 import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_state.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
+import 'package:urban_smart_farming/features/crops/presentation/widgets/global_status_card.dart';
+import 'package:urban_smart_farming/features/crops/presentation/widgets/status_badge.dart';
 
 /// Pantalla principal "Mi Jardín" - Dashboard global de cultivos
 class CropListScreen extends StatelessWidget {
@@ -21,11 +23,41 @@ class CropListScreen extends StatelessWidget {
             children: [
               const Text('Hola, Usuario', style: TextStyle(fontSize: 20)),
               const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () {
-                  // TODO: Navigate to notifications/alerts
-                },
+              // Badge de notificaciones con indicador
+              Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications),
+                    onPressed: () {
+                      // TODO: Navigate to notifications/alerts
+                    },
+                  ),
+                  // Badge contador (mockup - siempre muestra 3)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: const Text(
+                        '3',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -65,23 +97,42 @@ class CropListScreen extends StatelessWidget {
                 return _buildEmptyState(context);
               }
 
+              // Calcular estado global (mockup)
+              final statusData = _calculateGlobalStatus(state.crops);
+
               return RefreshIndicator(
                 onRefresh: () async {
                   context.read<CropsBloc>().add(RefreshCrops());
                   await Future.delayed(const Duration(milliseconds: 500));
                 },
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.85,
-                  ),
-                  itemCount: state.crops.length,
-                  itemBuilder: (context, index) {
-                    return _CropCard(crop: state.crops[index]);
-                  },
+                child: CustomScrollView(
+                  slivers: [
+                    // Resumen de Estado Global
+                    SliverToBoxAdapter(
+                      child: GlobalStatusCard(
+                        totalCrops: state.crops.length,
+                        cropsNeedingAttention: statusData['needsAttention']!,
+                        criticalCrops: statusData['critical']!,
+                      ),
+                    ),
+
+                    // Grid de cultivos
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 0.85,
+                            ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return _CropCard(crop: state.crops[index]);
+                        }, childCount: state.crops.length),
+                      ),
+                    ),
+                  ],
                 ),
               );
             }
@@ -131,6 +182,26 @@ class CropListScreen extends StatelessWidget {
       ),
     );
   }
+
+  /// Calcula el estado global de los cultivos (mockup basado en ID)
+  Map<String, int> _calculateGlobalStatus(List<CropEntity> crops) {
+    int needsAttention = 0;
+    int critical = 0;
+
+    for (var crop in crops) {
+      // Mockup: usar hash del ID para determinar estado
+      final hash = crop.id.hashCode % 100;
+
+      if (hash < 15) {
+        critical++; // 15% críticos
+      } else if (hash < 40) {
+        needsAttention++; // 25% necesita atención
+      }
+      // El resto está bien (60%)
+    }
+
+    return {'needsAttention': needsAttention, 'critical': critical};
+  }
 }
 
 class _CropCard extends StatelessWidget {
@@ -157,19 +228,26 @@ class _CropCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icono de cultivo
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.eco,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 30,
-                ),
+              // Icono de cultivo con badges
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.eco,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 30,
+                    ),
+                  ),
+                  // Mostrar badges según estado (mockup)
+                  ..._getCropStatusBadges(crop),
+                ],
               ),
               const SizedBox(height: 12),
 
@@ -244,5 +322,42 @@ class _CropCard extends StatelessWidget {
     } else {
       return 'Hace ${difference.inDays}d';
     }
+  }
+
+  /// Genera badges según el estado del cultivo (mockup)
+  List<Widget> _getCropStatusBadges(CropEntity crop) {
+    final badges = <Widget>[];
+    final hash = crop.id.hashCode % 100;
+
+    if (hash < 15) {
+      // Crítico - mostrar badge de advertencia
+      badges.add(
+        const Positioned(
+          top: -4,
+          right: -4,
+          child: StatusBadge(type: BadgeType.critical, size: 20),
+        ),
+      );
+    } else if (hash < 30) {
+      // Necesita agua
+      badges.add(
+        const Positioned(
+          top: -4,
+          right: -4,
+          child: StatusBadge(type: BadgeType.needsWater, size: 20),
+        ),
+      );
+    } else if (hash < 40) {
+      // Necesita luz
+      badges.add(
+        const Positioned(
+          top: -4,
+          right: -4,
+          child: StatusBadge(type: BadgeType.needsLight, size: 20),
+        ),
+      );
+    }
+
+    return badges;
   }
 }

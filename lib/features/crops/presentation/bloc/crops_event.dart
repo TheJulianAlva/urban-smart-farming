@@ -27,6 +27,24 @@ class CreateCropRequested extends CropsEvent {
   List<Object?> get props => [name, plantType, location];
 }
 
+/// Evento para agregar cultivo desde el wizard
+class AddCrop extends CropsEvent {
+  final String name;
+  final String location;
+  final dynamic profile; // CropProfile
+  final String? hardwareId;
+
+  const AddCrop({
+    required this.name,
+    required this.location,
+    required this.profile,
+    this.hardwareId,
+  });
+
+  @override
+  List<Object?> get props => [name, location, profile, hardwareId];
+}
+
 class DeleteCropRequested extends CropsEvent {
   final String cropId;
 

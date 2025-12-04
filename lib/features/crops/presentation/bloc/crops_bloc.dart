@@ -19,6 +19,7 @@ class CropsBloc extends Bloc<CropsEvent, CropsState> {
     on<LoadCrops>(_onLoadCrops);
     on<RefreshCrops>(_onRefreshCrops);
     on<CreateCropRequested>(_onCreateCrop);
+    on<AddCrop>(_onAddCrop);
     on<DeleteCropRequested>(_onDeleteCrop);
   }
 
@@ -53,6 +54,23 @@ class CropsBloc extends Bloc<CropsEvent, CropsState> {
     final result = await createCropUseCase(
       name: event.name,
       plantType: event.plantType,
+      location: event.location,
+    );
+
+    await result.fold((failure) async => emit(CropsError(failure.message)), (
+      newCrop,
+    ) async {
+      // Recargar lista después de crear
+      add(RefreshCrops());
+    });
+  }
+
+  Future<void> _onAddCrop(AddCrop event, Emitter<CropsState> emit) async {
+    // Por ahora usamos el CreateCropUseCase existente
+    // Se puede extender en el futuro para usar el profile
+    final result = await createCropUseCase(
+      name: event.name,
+      plantType: event.profile.name, // Usar nombre del perfil como plantType
       location: event.location,
     );
 

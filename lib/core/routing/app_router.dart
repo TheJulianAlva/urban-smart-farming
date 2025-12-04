@@ -10,7 +10,7 @@ class AppRouter {
   static const String login = '/login';
   static const String home = '/'; // Mi Jardín (dashboard global)
   static const String cropDetail = '/crops/:id';
-  static const String createCrop = '/crops/create';
+  static const String createCrop = '/create-crop';
   static const String aiDiagnosis = '/ai-diagnosis'; // Placeholder
 
   // Legacy routes - deprecated

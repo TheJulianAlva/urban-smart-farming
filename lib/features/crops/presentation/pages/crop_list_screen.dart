@@ -90,7 +90,7 @@ class CropListScreen extends StatelessWidget {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => context.push('/crops/create'),
+          onPressed: () => context.push('/create-crop'),
           child: const Icon(Icons.add),
         ),
       ),
@@ -123,7 +123,7 @@ class CropListScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => context.push('/crops/create'),
+            onPressed: () => context.push('/create-crop'),
             icon: const Icon(Icons.add),
             label: const Text('Crear Cultivo'),
           ),

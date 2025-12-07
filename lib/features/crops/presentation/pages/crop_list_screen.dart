@@ -8,7 +8,6 @@ import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_state
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/sensor.dart';
 import 'package:urban_smart_farming/features/crops/presentation/widgets/global_status_card.dart';
-import 'package:urban_smart_farming/features/crops/presentation/widgets/status_badge.dart';
 import 'package:urban_smart_farming/features/crops/presentation/widgets/sensor_gauge.dart';
 
 /// Pantalla principal "Mi Jardín" - Dashboard global de cultivos
@@ -416,41 +415,4 @@ String _getRelativeTime(DateTime dateTime) {
   } else {
     return 'Hace ${difference.inDays}d';
   }
-}
-
-/// Genera badges según el estado del cultivo (mockup)
-List<Widget> _getCropStatusBadges(CropEntity crop) {
-  final badges = <Widget>[];
-  final hash = crop.id.hashCode % 100;
-
-  if (hash < 15) {
-    // Crítico - mostrar badge de advertencia
-    badges.add(
-      const Positioned(
-        top: -4,
-        right: -4,
-        child: StatusBadge(type: BadgeType.critical, size: 20),
-      ),
-    );
-  } else if (hash < 30) {
-    // Necesita agua
-    badges.add(
-      const Positioned(
-        top: -4,
-        right: -4,
-        child: StatusBadge(type: BadgeType.needsWater, size: 20),
-      ),
-    );
-  } else if (hash < 40) {
-    // Necesita luz
-    badges.add(
-      const Positioned(
-        top: -4,
-        right: -4,
-        child: StatusBadge(type: BadgeType.needsLight, size: 20),
-      ),
-    );
-  }
-
-  return badges;
 }

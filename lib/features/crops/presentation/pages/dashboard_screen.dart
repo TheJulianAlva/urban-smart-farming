@@ -21,10 +21,7 @@ class DashboardScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => getIt<CropsBloc>()..add(LoadCrops()),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Dashboard del Cultivo'),
-          elevation: 0,
-        ),
+        appBar: AppBar(title: const Text(''), elevation: 0),
         body: BlocBuilder<CropsBloc, CropsState>(
           builder: (context, state) {
             if (state is CropsLoaded) {
@@ -109,7 +106,7 @@ class DashboardScreen extends StatelessWidget {
             _buildControlButton(context, crop),
           ],
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 56),
 
           // Información del perfil
           _buildSectionTitle(context, 'Perfil de la Planta'),
@@ -134,7 +131,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Icon(
                 Icons.eco,
-                size: 40,
+                size: 32,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
@@ -225,9 +222,9 @@ class DashboardScreen extends StatelessWidget {
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 0.9,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 0.85,
       children: [
         SensorGauge(
           sensor: crop.getSensor(SensorType.temperature),

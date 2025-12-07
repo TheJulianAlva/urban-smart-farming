@@ -35,6 +35,9 @@ class SensorMiniCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             sensor!.currentValue?.toStringAsFixed(1) ?? '--',
+            textScaler: MediaQuery.textScalerOf(
+              context,
+            ).clamp(minScaleFactor: 0.8, maxScaleFactor: 1.3),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -43,6 +46,9 @@ class SensorMiniCard extends StatelessWidget {
           ),
           Text(
             sensor!.unit,
+            textScaler: MediaQuery.textScalerOf(
+              context,
+            ).clamp(minScaleFactor: 0.8, maxScaleFactor: 1.3),
             style: TextStyle(fontSize: 11, color: Colors.grey[600]),
           ),
         ],

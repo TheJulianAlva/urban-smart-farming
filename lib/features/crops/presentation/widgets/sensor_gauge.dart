@@ -34,83 +34,99 @@ class SensorGauge extends StatelessWidget {
     final percentage = _getPercentage();
 
     return Card(
-      child: Padding(
-        padding: EdgeInsets.all(compact ? 12 : 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Icono y nombre
-            Row(
-              children: [
-                Icon(
-                  _getSensorIcon(),
-                  color: statusColor,
-                  size: compact ? 20 : 24,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    sensor!.name,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(compact ? 10 : 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Icono y nombre
+              Row(
+                children: [
+                  Icon(
+                    _getSensorIcon(),
+                    color: statusColor,
+                    size: compact ? 20 : 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      sensor!.name,
+                      textScaler: MediaQuery.textScalerOf(
+                        context,
+                      ).clamp(minScaleFactor: 0.8, maxScaleFactor: 1.3),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Valor actual
-            Text(
-              '${sensor!.currentValue?.toStringAsFixed(1) ?? '--'}${sensor!.unit}',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: statusColor,
-                fontWeight: FontWeight.bold,
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
-            // Barra de progreso
-            LinearProgressIndicator(
-              value: percentage,
-              backgroundColor: Colors.grey[200],
-              valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-              minHeight: 8,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            const SizedBox(height: 8),
-
-            // Rango y estado
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _getOptimalRange(),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              // Valor actual
+              Text(
+                '${sensor!.currentValue?.toStringAsFixed(1) ?? '--'}${sensor!.unit}',
+                textScaler: MediaQuery.textScalerOf(
+                  context,
+                ).clamp(minScaleFactor: 0.8, maxScaleFactor: 1.2),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: statusColor,
+                  fontWeight: FontWeight.bold,
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+              ),
+              const SizedBox(height: 8),
+
+              // Barra de progreso
+              LinearProgressIndicator(
+                value: percentage,
+                backgroundColor: Colors.grey[200],
+                valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              const SizedBox(height: 8),
+
+              // Rango y estado
+              Wrap(
+                spacing: 8,
+                runSpacing: 12,
+                children: [
+                  Text(
+                    _getOptimalRange(),
+                    textScaler: MediaQuery.textScalerOf(
+                      context,
+                    ).clamp(minScaleFactor: 0.8, maxScaleFactor: 1.3),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                   ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    _getStatusText(status),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: statusColor,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      _getStatusText(status),
+                      textScaler: MediaQuery.textScalerOf(
+                        context,
+                      ).clamp(minScaleFactor: 0.8, maxScaleFactor: 1.0),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: statusColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -235,11 +251,11 @@ class SensorGauge extends StatelessWidget {
   String _getOptimalRange() {
     switch (sensor!.type) {
       case SensorType.temperature:
-        return 'Óptimo: ${profile.minTemperature.toStringAsFixed(0)}-${profile.maxTemperature.toStringAsFixed(0)}°C';
+        return 'Óptimo: ${profile.minTemperature.toStringAsFixed(0)} - ${profile.maxTemperature.toStringAsFixed(0)}°C';
       case SensorType.soilMoisture:
-        return 'Óptimo: ${profile.minSoilMoisture.toStringAsFixed(0)}-${profile.maxSoilMoisture.toStringAsFixed(0)}%';
+        return 'Óptimo: ${profile.minSoilMoisture.toStringAsFixed(0)} - ${profile.maxSoilMoisture.toStringAsFixed(0)}%';
       case SensorType.ph:
-        return 'Óptimo: ${profile.minPH.toStringAsFixed(1)}-${profile.maxPH.toStringAsFixed(1)}';
+        return 'Óptimo: ${profile.minPH.toStringAsFixed(1)} - ${profile.maxPH.toStringAsFixed(1)}';
       case SensorType.light:
         return 'Óptimo: ${profile.optimalLux} lux';
     }

@@ -15,7 +15,8 @@ dependencies:
   dartz: ^0.10.1
   equatable: ^2.0.5
   fl_chart: ^0.68.0
-  intl: ^0.19.0
+  intl: ^0.20.2
+  device_preview: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -26,9 +27,10 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
+  remove_alpha_ios: true
   image_path: "assets/images/icon.png"
-  adaptive_icon_background: "#346648"
-  adaptive_icon_foreground: "assets/images/icon_foreground.png"
+  adaptive_icon_background: "#598e70"
+  adaptive_icon_foreground: "assets/images/icon.png"
 
 flutter:
   uses-material-design: true

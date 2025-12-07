@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:urban_smart_farming/core/di/di_container.dart';
 import 'package:urban_smart_farming/core/routing/app_router.dart';
 import 'package:urban_smart_farming/core/theme/app_theme.dart';
@@ -12,7 +14,12 @@ void main() async {
   // Configurar dependencias
   await setupDependencies();
 
-  runApp(const MainApp());
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode && kIsWeb,
+      builder: (context) => const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -30,6 +37,8 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         routerConfig: AppRouter.router,
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
       ),
     );
   }

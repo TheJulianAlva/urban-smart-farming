@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:urban_smart_farming/core/di/di_container.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/pot.dart';
 import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_bloc.dart';
 import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_event.dart';
 import 'package:urban_smart_farming/features/crops/presentation/widgets/wizard_step_1_basic_info.dart';
@@ -25,7 +26,7 @@ class _CropCreationWizardScreenState extends State<CropCreationWizardScreen> {
   // Datos del wizard
   String _cropName = '';
   String _cropLocation = '';
-  String? _hardwareId;
+  Pot? _selectedPot;
   CropProfile? _selectedProfile;
   bool _isExpertMode = false;
 
@@ -89,7 +90,8 @@ class _CropCreationWizardScreenState extends State<CropCreationWizardScreen> {
         name: _cropName,
         location: _cropLocation,
         profile: _selectedProfile!,
-        hardwareId: _hardwareId,
+        hardwareId:
+            _selectedPot?.hardwareId, // Usar hardwareId del pot si existe
       ),
     );
 
@@ -171,10 +173,11 @@ class _CropCreationWizardScreenState extends State<CropCreationWizardScreen> {
 
                 // Paso 2: Hardware
                 WizardStep2Hardware(
-                  initialHardwareId: _hardwareId,
-                  onDataChanged: (hardwareId) {
+                  initialPot: _selectedPot,
+                  onDataChanged: (pot, skipHardware) {
                     setState(() {
-                      _hardwareId = hardwareId;
+                      _selectedPot = pot;
+                      // skipHardware no se usa, solo almacenamos el pot
                     });
                   },
                 ),
@@ -195,7 +198,7 @@ class _CropCreationWizardScreenState extends State<CropCreationWizardScreen> {
                 WizardStep4Summary(
                   name: _cropName,
                   location: _cropLocation,
-                  hardwareId: _hardwareId,
+                  hardwareId: _selectedPot?.hardwareId,
                   profile:
                       _selectedProfile ?? PredefinedProfiles.profiles.first,
                 ),

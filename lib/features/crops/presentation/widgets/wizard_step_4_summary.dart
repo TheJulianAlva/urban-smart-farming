@@ -98,12 +98,12 @@ class WizardStep4Summary extends StatelessWidget {
             _buildInfoRow(
               Icons.water_drop,
               'Humedad',
-              '${profile.minHumidity}% - ${profile.maxHumidity}%',
+              '${profile.minSoilMoisture.toStringAsFixed(0)}% - ${profile.maxSoilMoisture.toStringAsFixed(0)}%',
             ),
             _buildInfoRow(
               Icons.thermostat,
               'Temperatura',
-              '${profile.minTemperature}°C - ${profile.maxTemperature}°C',
+              '${profile.minTemperature.toStringAsFixed(0)}°C - ${profile.maxTemperature.toStringAsFixed(0)}°C',
             ),
             _buildInfoRow(
               Icons.wb_sunny,

@@ -23,11 +23,14 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
   CropProfile? _selectedProfile;
 
   // Controladores para modo experto
-  late TextEditingController _minHumidityController;
-  late TextEditingController _maxHumidityController;
+  late TextEditingController _minMoistureController;
+  late TextEditingController _maxMoistureController;
   late TextEditingController _minTempController;
   late TextEditingController _maxTempController;
+  late TextEditingController _minPHController;
+  late TextEditingController _maxPHController;
   late TextEditingController _lightHoursController;
+  late TextEditingController _optimalLuxController;
 
   @override
   void initState() {
@@ -36,11 +39,11 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
     _selectedProfile = widget.initialProfile;
 
     // Inicializar controladores
-    _minHumidityController = TextEditingController(
-      text: widget.initialProfile?.minHumidity.toString() ?? '50',
+    _minMoistureController = TextEditingController(
+      text: widget.initialProfile?.minSoilMoisture.toString() ?? '50',
     );
-    _maxHumidityController = TextEditingController(
-      text: widget.initialProfile?.maxHumidity.toString() ?? '70',
+    _maxMoistureController = TextEditingController(
+      text: widget.initialProfile?.maxSoilMoisture.toString() ?? '70',
     );
     _minTempController = TextEditingController(
       text: widget.initialProfile?.minTemperature.toString() ?? '15',
@@ -48,18 +51,30 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
     _maxTempController = TextEditingController(
       text: widget.initialProfile?.maxTemperature.toString() ?? '25',
     );
+    _minPHController = TextEditingController(
+      text: widget.initialProfile?.minPH.toString() ?? '6.0',
+    );
+    _maxPHController = TextEditingController(
+      text: widget.initialProfile?.maxPH.toString() ?? '7.0',
+    );
     _lightHoursController = TextEditingController(
       text: widget.initialProfile?.requiredLightHours.toString() ?? '8',
+    );
+    _optimalLuxController = TextEditingController(
+      text: widget.initialProfile?.optimalLux.toString() ?? '10000',
     );
   }
 
   @override
   void dispose() {
-    _minHumidityController.dispose();
-    _maxHumidityController.dispose();
+    _minMoistureController.dispose();
+    _maxMoistureController.dispose();
     _minTempController.dispose();
     _maxTempController.dispose();
+    _minPHController.dispose();
+    _maxPHController.dispose();
     _lightHoursController.dispose();
+    _optimalLuxController.dispose();
     super.dispose();
   }
 
@@ -68,15 +83,18 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
 
     if (_isExpertMode) {
       // Crear perfil personalizado desde los campos
-      profile = CropProfile(
+      profile = PlantProfile(
         id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
         name: 'Perfil Personalizado',
         description: 'Configuración manual',
-        minHumidity: double.tryParse(_minHumidityController.text) ?? 50,
-        maxHumidity: double.tryParse(_maxHumidityController.text) ?? 70,
+        minSoilMoisture: double.tryParse(_minMoistureController.text) ?? 50,
+        maxSoilMoisture: double.tryParse(_maxMoistureController.text) ?? 70,
         minTemperature: double.tryParse(_minTempController.text) ?? 15,
         maxTemperature: double.tryParse(_maxTempController.text) ?? 25,
+        minPH: double.tryParse(_minPHController.text) ?? 6.0,
+        maxPH: double.tryParse(_maxPHController.text) ?? 7.0,
         requiredLightHours: int.tryParse(_lightHoursController.text) ?? 8,
+        optimalLux: int.tryParse(_optimalLuxController.text) ?? 10000,
         isPredefined: false,
       );
     } else {
@@ -186,14 +204,14 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
                     children: [
                       Chip(
                         label: Text(
-                          '💧 ${profile.minHumidity}-${profile.maxHumidity}%',
+                          '💧 ${profile.minSoilMoisture.toStringAsFixed(0)}-${profile.maxSoilMoisture.toStringAsFixed(0)}%',
                           style: const TextStyle(fontSize: 11),
                         ),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       Chip(
                         label: Text(
-                          '🌡️ ${profile.minTemperature}-${profile.maxTemperature}°C',
+                          '🌡️ ${profile.minTemperature.toStringAsFixed(0)}-${profile.maxTemperature.toStringAsFixed(0)}°C',
                           style: const TextStyle(fontSize: 11),
                         ),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -201,6 +219,13 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
                       Chip(
                         label: Text(
                           '☀️ ${profile.requiredLightHours}h',
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      Chip(
+                        label: Text(
+                          '🧪 pH ${profile.minPH.toStringAsFixed(1)}-${profile.maxPH.toStringAsFixed(1)}',
                           style: const TextStyle(fontSize: 11),
                         ),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -250,7 +275,7 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
           children: [
             Expanded(
               child: TextField(
-                controller: _minHumidityController,
+                controller: _minMoistureController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Mínimo',
@@ -265,7 +290,7 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
             const SizedBox(width: 16),
             Expanded(
               child: TextField(
-                controller: _maxHumidityController,
+                controller: _maxMoistureController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Máximo',
@@ -319,6 +344,44 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
         ),
         const SizedBox(height: 24),
 
+        // pH del Suelo
+        Text('pH del Suelo', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _minPHController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Mínimo',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  suffixText: 'pH',
+                ),
+                onChanged: (_) => _notifyChanges(),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: TextField(
+                controller: _maxPHController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Máximo',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  suffixText: 'pH',
+                ),
+                onChanged: (_) => _notifyChanges(),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+
         // Horas de luz
         Text(
           'Horas de Luz Diarias',
@@ -333,6 +396,25 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             suffixText: 'horas',
             helperText: 'Cantidad de horas de luz requeridas por día',
+          ),
+          onChanged: (_) => _notifyChanges(),
+        ),
+        const SizedBox(height: 24),
+
+        // Lux óptimos
+        Text(
+          'Iluminación Óptima',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _optimalLuxController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'Lux',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            suffixText: 'lux',
+            helperText: 'Intensidad de luz óptima (ej: 10000 lux)',
           ),
           onChanged: (_) => _notifyChanges(),
         ),

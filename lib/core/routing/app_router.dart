@@ -3,6 +3,8 @@ import 'package:urban_smart_farming/features/auth/presentation/pages/auth_screen
 import 'package:urban_smart_farming/features/main/main_nav_screen.dart';
 import 'package:urban_smart_farming/features/main/crop_detail_screen.dart';
 import 'package:urban_smart_farming/features/crops/presentation/pages/crop_creation_wizard_screen.dart';
+import 'package:urban_smart_farming/features/crops/presentation/pages/dashboard_screen.dart';
+import 'package:urban_smart_farming/features/crops/presentation/pages/control_screen.dart';
 import 'package:urban_smart_farming/features/settings/presentation/pages/settings_screen.dart';
 
 /// Configuración de rutas de la aplicación usando GoRouter
@@ -43,6 +45,22 @@ class AppRouter {
         path: createCrop,
         name: 'createCrop',
         builder: (context, state) => const CropCreationWizardScreen(),
+      ),
+      GoRoute(
+        path: '/dashboard/:id',
+        name: 'dashboard',
+        builder: (context, state) {
+          final cropId = state.pathParameters['id']!;
+          return DashboardScreen(cropId: cropId);
+        },
+      ),
+      GoRoute(
+        path: '/control/:id',
+        name: 'control',
+        builder: (context, state) {
+          final cropId = state.pathParameters['id']!;
+          return ControlScreen(cropId: cropId);
+        },
       ),
       GoRoute(
         path: settings,

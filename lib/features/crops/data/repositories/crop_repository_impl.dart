@@ -2,6 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:urban_smart_farming/core/utils/failures.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
 import 'package:urban_smart_farming/features/crops/domain/repositories/crop_repository.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/data/models/mock_pot_factory.dart';
 
 /// Implementación mock del repositorio de cultivos
 class CropRepositoryImpl implements CropRepository {
@@ -15,6 +17,8 @@ class CropRepositoryImpl implements CropRepository {
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
       lastUpdate: DateTime.now().subtract(const Duration(minutes: 5)),
       status: CropStatus.active,
+      profile: PredefinedProfiles.getById('tomatoes')!,
+      pot: MockPotFactory.createMockPot(id: 'pot-1', cropId: '1'),
     ),
     CropEntity(
       id: '2',
@@ -24,6 +28,8 @@ class CropRepositoryImpl implements CropRepository {
       createdAt: DateTime.now().subtract(const Duration(days: 15)),
       lastUpdate: DateTime.now().subtract(const Duration(minutes: 12)),
       status: CropStatus.active,
+      profile: PredefinedProfiles.getById('lettuce')!,
+      pot: MockPotFactory.createMockPot(id: 'pot-2', cropId: '2'),
     ),
     CropEntity(
       id: '3',
@@ -33,6 +39,8 @@ class CropRepositoryImpl implements CropRepository {
       createdAt: DateTime.now().subtract(const Duration(days: 7)),
       lastUpdate: DateTime.now().subtract(const Duration(minutes: 3)),
       status: CropStatus.active,
+      profile: PredefinedProfiles.getById('basil')!,
+      pot: null, // Sin hardware
     ),
   ];
 
@@ -84,6 +92,23 @@ class CropRepositoryImpl implements CropRepository {
       // Generar nuevo ID
       final newId = (_crops.length + 1).toString();
 
+      // Usar perfil predefinido o crear uno básico
+      final profile =
+          PredefinedProfiles.getById('tomatoes') ??
+          const PlantProfile(
+            id: 'default',
+            name: 'Predeterminado',
+            description: 'Perfil predeterminado',
+            minSoilMoisture: 50,
+            maxSoilMoisture: 80,
+            minTemperature: 18,
+            maxTemperature: 28,
+            minPH: 6.0,
+            maxPH: 7.5,
+            requiredLightHours: 8,
+            optimalLux: 10000,
+          );
+
       final newCrop = CropEntity(
         id: newId,
         name: name,
@@ -92,6 +117,8 @@ class CropRepositoryImpl implements CropRepository {
         createdAt: DateTime.now(),
         lastUpdate: DateTime.now(),
         status: CropStatus.active,
+        profile: profile,
+        pot: null, // Sin hardware por defecto
       );
 
       _crops.add(newCrop);

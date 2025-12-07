@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="urban_smart_farming"
+        android:label="Urban Smart Farming"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

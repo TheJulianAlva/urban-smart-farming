@@ -1,4 +1,8 @@
 import 'package:equatable/equatable.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/pot.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/sensor.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/actuator.dart';
 
 /// Estado del cultivo
 enum CropStatus {
@@ -17,6 +21,12 @@ class CropEntity extends Equatable {
   final DateTime? lastUpdate; // Última actualización de sensores
   final CropStatus status;
 
+  // NUEVO: Perfil de la planta con parámetros óptimos
+  final PlantProfile profile;
+
+  // NUEVO: Maceta con sensores y actuadores (opcional)
+  final Pot? pot;
+
   const CropEntity({
     required this.id,
     required this.name,
@@ -25,6 +35,8 @@ class CropEntity extends Equatable {
     required this.createdAt,
     this.lastUpdate,
     required this.status,
+    required this.profile,
+    this.pot,
   });
 
   @override
@@ -36,7 +48,20 @@ class CropEntity extends Equatable {
     createdAt,
     lastUpdate,
     status,
+    profile,
+    pot,
   ];
+
+  // Helpers para acceso rápido a sensores y actuadores
+  bool get hasHardware => pot != null && pot!.isConnected;
+  List<Sensor> get sensors => pot?.sensors ?? [];
+  List<Actuator> get actuators => pot?.actuators ?? [];
+
+  // Helper para obtener sensor específico
+  Sensor? getSensor(SensorType type) => pot?.getSensorByType(type);
+
+  // Helper para obtener actuador específico
+  Actuator? getActuator(ActuatorType type) => pot?.getActuatorByType(type);
 
   CropEntity copyWith({
     String? id,
@@ -46,6 +71,8 @@ class CropEntity extends Equatable {
     DateTime? createdAt,
     DateTime? lastUpdate,
     CropStatus? status,
+    PlantProfile? profile,
+    Pot? pot,
   }) {
     return CropEntity(
       id: id ?? this.id,
@@ -55,6 +82,8 @@ class CropEntity extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       lastUpdate: lastUpdate ?? this.lastUpdate,
       status: status ?? this.status,
+      profile: profile ?? this.profile,
+      pot: pot ?? this.pot,
     );
   }
 

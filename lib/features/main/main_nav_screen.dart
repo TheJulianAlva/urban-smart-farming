@@ -14,41 +14,38 @@ class MainNavScreen extends StatefulWidget {
 
 class _MainNavScreenState extends State<MainNavScreen> {
   int _currentIndex = 0;
+  // Key para forzar recarga de CropListScreen
+  Key _gardenKey = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
     // Lista de pantallas principales
     final List<Widget> screens = [
-      const CropListScreen(),  // Mi Jardín
-      const AiDiagnosisScreen(),  // Diagnóstico IA (placeholder)
-      const SettingsScreen(),  // Ajustes
+      CropListScreen(key: _gardenKey), // Mi Jardín
+      const AiDiagnosisScreen(), // Diagnóstico IA (placeholder)
+      const SettingsScreen(), // Ajustes
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
+            // Si se toca "Mi Jardín" nuevamente, regenerar key para recargar
+            if (index == 0 && _currentIndex == 0) {
+              _gardenKey = UniqueKey();
+            }
             _currentIndex = index;
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.spa),
-            label: 'Mi Jardín',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.spa), label: 'Mi Jardín'),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),
             label: 'Diagnóstico IA',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Ajustes',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ajustes'),
         ],
       ),
     );

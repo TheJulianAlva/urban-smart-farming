@@ -136,7 +136,12 @@ class ControlScreen extends StatelessWidget {
                               );
                             }
                             : null,
-                    activeThumbColor: Theme.of(context).colorScheme.primary,
+                    thumbColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return Theme.of(context).colorScheme.primary;
+                      }
+                      return null;
+                    }),
                   ),
                 ],
               ),

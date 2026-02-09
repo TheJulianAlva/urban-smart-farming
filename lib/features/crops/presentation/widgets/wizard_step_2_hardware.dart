@@ -366,7 +366,7 @@ class _WizardStep2HardwareState extends State<WizardStep2Hardware> {
                 Icon(signalIcon, size: 14, color: Colors.grey[600]),
                 const SizedBox(width: 4),
                 Text(
-                  'Señal: $signalStrength',
+                  signalStrength,
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
                 const SizedBox(width: 12),

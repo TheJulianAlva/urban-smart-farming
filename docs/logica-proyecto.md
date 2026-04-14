@@ -91,7 +91,7 @@ El núcleo del sistema es una **Aplicación Móvil (desarrollada en Flutter)** q
 
 **CU-10: Controlar Actuador Manualmente**
 * **Interfaz:** Botones tipo "Toggle" en la App (ON/OFF) para bombas de riego o luces.
-* **Acción:** Envía comando inmediato al hardware.
+* **Acción:** Envía comando inmediato al hardware y registra el evento (ej. riego) en la base de datos.
 * **Feedback:** La UI debe reflejar si el hardware confirmó la recepción del comando o si hubo error.
 
 **CU-11: Gestionar Reglas Automáticas**
@@ -99,6 +99,7 @@ El núcleo del sistema es una **Aplicación Móvil (desarrollada en Flutter)** q
 * **Constructor de Reglas:** Interfaz que permita crear frases lógicas:
     * *SI* [Sensor Humedad] < [30%] *ENTONCES* [Activar Bomba] por [5 min].
 * **Validación:** Evitar reglas contradictorias (ej. encender y apagar al mismo tiempo).
+* **Registro:** Toda ejecución automática queda registrada con su duración para ser consultada en el historial.
 
 ---
 

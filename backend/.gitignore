@@ -1,0 +1,48 @@
+# Entornos Virtuales
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Variables de Entorno (¡Nunca subir credenciales de DB o Gemini!)
+.env.local
+.env.development
+.env.test
+
+# Archivos compilados en Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Herramientas de desarrollo / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Caché / Testing / Logs
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.log
+logs/
+
+# Empaquetado / Distribución
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg

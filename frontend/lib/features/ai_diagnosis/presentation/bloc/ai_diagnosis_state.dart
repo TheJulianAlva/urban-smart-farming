@@ -1,38 +1,31 @@
-/// Estados del BLoC de Diagnóstico con IA
-abstract class AiDiagnosisState {}
+import 'package:equatable/equatable.dart';
+import 'package:urban_smart_farming/features/ai_diagnosis/domain/entities/vision_analysis.dart';
 
-/// Estado inicial — sin imagen seleccionada
+abstract class AiDiagnosisState extends Equatable {
+  const AiDiagnosisState();
+  
+  @override
+  List<Object> get props => [];
+}
+
 class AiDiagnosisInitial extends AiDiagnosisState {}
 
-/// Imagen seleccionada, lista para analizar
-class AiDiagnosisImageSelected extends AiDiagnosisState {
-  final String imagePath;
-  AiDiagnosisImageSelected(this.imagePath);
+class AiDiagnosisLoading extends AiDiagnosisState {}
+
+class AiDiagnosisSuccess extends AiDiagnosisState {
+  final VisionAnalysis analysis;
+
+  const AiDiagnosisSuccess({required this.analysis});
+
+  @override
+  List<Object> get props => [analysis];
 }
 
-/// Simulando análisis de la imagen
-class AiDiagnosisAnalyzing extends AiDiagnosisState {
-  final String imagePath;
-  AiDiagnosisAnalyzing(this.imagePath);
-}
+class AiDiagnosisError extends AiDiagnosisState {
+  final String message;
 
-/// Resultado del análisis mock
-class AiDiagnosisResult extends AiDiagnosisState {
-  final String imagePath;
-  final String problemName;
-  final String problemDescription;
-  final String severity;
-  final String affectedArea;
-  final List<String> recommendations;
-  final List<String> preventionTips;
+  const AiDiagnosisError({required this.message});
 
-  AiDiagnosisResult({
-    required this.imagePath,
-    required this.problemName,
-    required this.problemDescription,
-    required this.severity,
-    required this.affectedArea,
-    required this.recommendations,
-    required this.preventionTips,
-  });
+  @override
+  List<Object> get props => [message];
 }

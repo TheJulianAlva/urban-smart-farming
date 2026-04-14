@@ -1,164 +1,109 @@
-# Urban Smart Farming
+# 🌱 Urban Smart Farming
 
-Una aplicación móvil inteligente para gestión de cultivos urbanos, desarrollada con Flutter.
+> Intelligent Urban Agriculture Platform integrating IoT, Automation, Data Analytics, and Computer Vision to optimize crop growth in real-time.
 
-## 📋 Requisitos Previos
+![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=openjdk)
+![SQL](https://img.shields.io/badge/SQL-Relational-003B57?style=for-the-badge&logo=postgresql)
+![Architecture](https://img.shields.io/badge/Architecture-Layered%20%26%20Modular-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-In%20Development-orange?style=for-the-badge)
 
-Antes de poder ejecutar y probar este proyecto, asegúrate de tener instalado lo siguiente:
+## 📖 About the Project
 
-### 1. Flutter SDK
-- **Versión requerida**: Flutter SDK 3.7.2 o superior
-- **Descarga**: [https://docs.flutter.dev/get-started/install](https://docs.flutter.dev/get-started/install)
-- **Verificación**: 
-  ```bash
-  flutter --version
-  ```
+**Urban Smart Farming** is a smart agriculture management system designed for urban farmers who want to monitor, control, and automate their crops using technology. The objective is to optimize plant growth, reduce resource waste, and enable data-driven decision-making.
 
-### 2. Dart SDK
-- **Versión requerida**: Dart 3.7.2 o superior (incluido con Flutter)
-- **Verificación**:
-  ```bash
-  dart --version
-  ```
+### ✨ Key Features
 
-### 3. Editor de Código
-Elige uno de los siguientes:
-- **Visual Studio Code** con las extensiones:
-  - Flutter
-  - Dart
-- **Android Studio** con los plugins:
-  - Flutter
-  - Dart
+* 🌡 **Environmental Monitoring:** Real-time tracking of humidity, temperature, and light levels.
+* 🤖 **Automation Engine:** Rule-based system (e.g., *IF Humidity < 30% THEN Activate Irrigation*).
+* 📷 **Computer Vision:** Plant health analysis through image processing.
+* 📊 **Analytics Dashboard:** Visualization of historical data and crop performance insights.
+* 🔔 **Intelligent Notifications:** Alert system for critical environmental changes.
 
-### 4. Herramientas Específicas por Plataforma
+---
 
-#### Para Android:
-- **Android Studio** o **Android SDK**
-- **Java Development Kit (JDK)** 17 o superior
-- **Emulador Android** o dispositivo físico con modo desarrollador activado
-- **Verificación**:
-  ```bash
-  flutter doctor --android-licenses
-  ```
+## 🏛️ System Architecture
 
-### 5. Git
-- **Descarga**: [https://git-scm.com/downloads](https://git-scm.com/downloads)
-- **Verificación**:
-  ```bash
-  git --version
-  ```
+The system is organized into modular components following **SOLID** principles and a **Layered Architecture** to ensure scalability and maintainability.
 
-## 🚀 Configuración del Proyecto
+### Main Modules
+1.  **Access & Profile Management:** Handles user security, registration, and plant catalog management.
+2.  **Monitoring & Notifications:** Processes sensor data in real-time and manages alert generation.
+3.  **Control & Automation:** Evaluates rules and manages manual or automatic actuator commands.
+4.  **Analytics:** Provides trend visualization and image analysis using computer vision.
 
-### 1. Clonar el Repositorio
+### System Actors
+* 👤 **User (Primary):** Configures profiles, monitors conditions, and controls devices.
+* 📡 **Sensors/Actuators (Secondary):** Hardware devices providing data and executing commands.
+* 🔔 **Notification System (Secondary):** External services for delivering email or push alerts.
+
+---
+
+## 🛠️ Tech Stack
+
+* **Backend:** Java 17+ (Spring Boot recommended).
+* **Database:** SQL (MySQL 8+ / PostgreSQL 14+).
+* **IoT Communication:** Integration for sensor and actuator data processing.
+* **Computer Vision:** Specialized module for image-based plant health assessment.
+* **Build Tool:** Maven 3.8+.
+
+---
+
+## 📂 Project Structure
+
+```text
+urban-smart-farming/
+├── src/
+│   ├── controllers/    # API Endpoints / UI Logic
+│   ├── services/       # Business Logic & Rules
+│   ├── models/         # Data Entities
+│   ├── repositories/   # Data Access Layer (SQL)
+│   ├── automation/     # Rule Evaluation Engine
+│   └── config/         # System Configuration
+├── database/           # schema.sql and migrations
+├── docs/               # Use cases and diagrams
+├── assets/             # Images and static resources
+└── README.md
+```
+
+## 🚀 Installation & Setup
+
+### 1. Prerequisites
+* **Java JDK:** Version 17 or higher.
+* **Database:** MySQL 8+ or PostgreSQL 14+.
+* **Maven:** Version 3.8+.
+
+### 2. Configuration
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/TheJulianAlva/urban-smart-farming.git
+    cd urban-smart-farming
+    ```
+2.  **Database Setup:**
+    * Create a database: `CREATE DATABASE urban_smart_farming;`
+    * Run `database/schema.sql` to set up tables.
+3.  **Update Credentials:**
+    Modify `src/main/resources/application.properties` with your database info:
+    ```properties
+    spring.datasource.url=jdbc:mysql://localhost:3306/urban_smart_farming
+    spring.datasource.username=root
+    spring.datasource.password=yourpassword
+    ```
+
+### 3. Execution
 ```bash
-git clone https://github.com/TheJulianAlva/urban-smart-farming.git
-cd urban-smart-farming
-```
+mvn clean install
+mvn spring-boot:run
+📈 Future Improvements
+🌎 Mobile Application: Cross-platform app for on-the-go monitoring.
 
-### 2. Verificar la Instalación de Flutter
-```bash
-flutter doctor
-```
-Asegúrate de que todos los componentes necesarios estén marcados con ✓. Resuelve cualquier problema indicado por el comando.
+☁️ Cloud Deployment: Migration to AWS or Azure for global accessibility.
 
-### 3. Instalar Dependencias
-```bash
-flutter pub get
-```
+🧠 AI Analysis: Predictive crop health analysis using Machine Learning.
 
-Esto instalará todas las dependencias del proyecto listadas en `pubspec.yaml`, incluyendo:
-- `flutter_bloc` (^8.1.3) - Gestión de estado
-- `go_router` (^13.0.0) - Navegación
-- `get_it` (^7.6.4) - Inyección de dependencias
-- `dartz` (^0.10.1) - Programación funcional
-- `equatable` (^2.0.5) - Comparación de objetos
-- `fl_chart` (^0.68.0) - Gráficos
-- `intl` (^0.19.0) - Internacionalización
+📡 MQTT Integration: Optimized protocol for IoT device communication.
 
-## 🏃‍♂️ Ejecutar el Proyecto
 
-### Opción 1: Usando VS Code
-1. Abre el proyecto en VS Code
-2. Presiona `F5` o usa el menú `Run > Start Debugging`
-3. Selecciona el dispositivo de destino en la barra de estado
-
-### Opción 2: Usando Android Studio
-1. Abre el proyecto en Android Studio
-2. Selecciona el dispositivo de destino en la barra superior
-3. Haz clic en el botón ▶️ (Run)
-
-## 📱 Dispositivos Recomendados para Pruebas
-
-### Android:
-- **Emulador**: Pixel 5 API 33 (Android 13) o superior
-- **Resolución mínima**: 1080x2340
-
-### iOS:
-- **Simulador**: iPhone 14 o superior
-- **iOS**: 14.0 o superior
-
-## 🏗️ Estructura del Proyecto
-
-El proyecto sigue los principios de Clean Architecture:
-
-```
-lib/
-├── core/              # Utilidades compartidas
-├── features/          # Funcionalidades por módulos
-│   ├── auth/          # Autenticación
-│   │   ├── data/      # Repositorios y fuentes de datos
-│   │   ├── domain/    # Entidades y casos de uso
-│   │   └── presentation/ # UI y gestión de estado
-│   └── dashboard/     # Panel de control
-│       ├── data/
-│       ├── domain/
-│       └── presentation/
-└── main.dart          # Punto de entrada
-```
-
-## ⚠️ Solución de Problemas Comunes
-
-### Error: "Flutter SDK not found"
-```bash
-# Asegúrate de que Flutter esté en el PATH
-export PATH="$PATH:`pwd`/flutter/bin"  # Linux/macOS
-# o configura el PATH en Windows
-```
-
-### Error: "Gradle build failed" (Android)
-```bash
-# Limpia el build
-flutter clean
-flutter pub get
-```
-
-### Error: "CocoaPods not installed" (iOS)
-```bash
-sudo gem install cocoapods
-cd ios
-pod install
-```
-
-### Problemas de rendimiento en desarrollo
-```bash
-# Ejecutar en modo release (más rápido)
-flutter run --release
-```
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia especificada en el archivo LICENSE.
-
-## 🤝 Contribuir
-
-Si deseas contribuir al proyecto:
-1. Haz un fork del repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📧 Contacto
-
-Para preguntas o soporte, contacta con el equipo de desarrollo.
+👩‍💻 Authors
+Urban Smart Farming – Software Engineering Project
+*   **[TheJulianAlva](https://github.com/TheJulianAlva)** - *Julián Alva*
+*   **[Ximenakdsk](https://github.com/Ximenakdsk)** - *Ximena Hernández*

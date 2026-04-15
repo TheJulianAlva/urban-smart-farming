@@ -18,7 +18,8 @@ class Settings(BaseSettings):
 
     # --- Supabase ---
     supabase_url: str
-    supabase_key: str
+    supabase_key: str           # anon key (uso cliente Flutter)
+    supabase_service_key: str   # service role key (bypass RLS en backend)
 
     # --- Broker MQTT ---
     mqtt_broker_host: str

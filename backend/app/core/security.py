@@ -3,9 +3,9 @@ Middleware y dependencias de seguridad.
 
 Implementa la validación del Bearer Token (JWT) emitido por Supabase Auth.
 
-El JWT se verifica en cada petición a los endpoints protegidos ANTES de
-ejecutar cualquier lógica de negocio. Si el token es inválido, expirado o
-ausente, FastAPI devuelve automáticamente un error HTTP 401.
+Supabase firma sus tokens con ES256 (clave asimétrica), por lo que la
+validación se delega al propio cliente de Supabase en lugar de hacerla
+manualmente con PyJWT + HS256.
 
 Uso en cualquier endpoint que requiera autenticación:
     from app.core.security import get_current_user
@@ -15,11 +15,10 @@ Uso en cualquier endpoint que requiera autenticación:
         ...
 """
 
-import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.core.config import settings
+from app.core.supabase import supabase_client
 
 # Esquema de seguridad: extrae el token del header "Authorization: Bearer <token>"
 _bearer_scheme = HTTPBearer()
@@ -31,32 +30,22 @@ def get_current_user(
     """
     Dependencia de FastAPI para validar el JWT de Supabase en un endpoint.
 
-    Extrae y verifica la firma del token. Si es válido, devuelve el payload
-    (información del usuario como su ID) para que el endpoint lo pueda usar.
+    Delega la verificación al cliente de Supabase, que maneja correctamente
+    el algoritmo ES256 que Supabase usa para firmar sus tokens.
 
-    Lanza HTTPException 401 si:
-    - El token está ausente.
-    - La firma es inválida o fue manipulada.
-    - El token ha expirado.
+    Lanza HTTPException 401 si el token es inválido o ha expirado.
     """
     token = credentials.credentials
 
     try:
-        payload = jwt.decode(
-            token,
-            settings.supabase_key,
-            algorithms=["HS256"],
-            options={"verify_aud": False},
-        )
-        return payload
+        user_response = supabase_client.auth.get_user(token)
+        user = user_response.user
+        if user is None:
+            raise ValueError("Usuario no encontrado")
+        return {"sub": user.id, "email": user.email}
 
-    except jwt.ExpiredSignatureError:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="El token de sesión ha expirado. Inicia sesión nuevamente.",
-        )
-    except jwt.InvalidTokenError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token de autenticación inválido.",
+            detail="Token de autenticación inválido o expirado.",
         )

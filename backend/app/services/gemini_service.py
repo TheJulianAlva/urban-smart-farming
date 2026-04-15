@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 genai.configure(api_key=settings.gemini_api_key)
 
 # Usamos gemini-1.5-flash por su velocidad y capacidad multimodal (texto + imagen).
-_model = genai.GenerativeModel("gemini-1.5-flash")
+_model = genai.GenerativeModel("gemini-2.5-flash")
 
 # ---------------------------------------------------------------------------
 # Prompt Estricto
@@ -83,10 +83,23 @@ async def analyze_plant_image(image_bytes: bytes, mime_type: str = "image/jpeg")
         HTTPException 503: Si la API de Gemini no responde o hay un error de red.
         HTTPException 502: Si Gemini responde con un formato JSON inesperado.
     """
-    # --- Llamada a la API de Gemini ---
+    # --- Mock para desarrollo (evita llamadas reales a Gemini) ---
+    # Cambiar a False para usar Gemini real cuando el quota esté disponible.
+    _USE_MOCK = True
+    if _USE_MOCK:
+        return {
+            "diagnosis": "Deficiencia de Nitrógeno",
+            "suggested_treatment": (
+                "Aplicar fertilizante nitrogenado (urea o nitrato de amonio) "
+                "diluido en agua. Regar en las horas de menor temperatura."
+            ),
+            "confidence_percentage": 82.5,
+        }
+
+    # --- Llamada a la API de Gemini (async para no bloquear el event loop) ---
     try:
         image_part = {"mime_type": mime_type, "data": image_bytes}
-        response = _model.generate_content([_DIAGNOSIS_PROMPT, image_part])
+        response = await _model.generate_content_async([_DIAGNOSIS_PROMPT, image_part])
         raw_text = response.text.strip()
 
     except Exception as exc:

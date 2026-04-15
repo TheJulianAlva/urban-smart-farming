@@ -22,7 +22,7 @@ router = APIRouter(prefix="/vision", tags=["Vision AI"])
 
 @router.post("/analyze", status_code=status.HTTP_201_CREATED)
 async def analyze_crop_image(
-    crop_id: str = Form(..., description="ID del cultivo a diagnosticar."),
+    crop_id: str | None = Form(default=None, description="ID del cultivo a diagnosticar (opcional)."),
     image: UploadFile = File(..., description="Foto de la planta (JPEG, PNG, etc.)."),
     current_user: dict = Depends(get_current_user),
 ) -> Any:
@@ -39,6 +39,10 @@ async def analyze_crop_image(
     # ------------------------------------------------------------------
     image_bytes = await image.read()
     mime_type = image.content_type or "image/jpeg"
+    if mime_type == "application/octet-stream":
+        import mimetypes
+        guessed, _ = mimetypes.guess_type(image.filename or "")
+        mime_type = guessed or "image/jpeg"
 
     # ------------------------------------------------------------------
     # 2. Obtener el diagnóstico de Gemini (delega al servicio)
@@ -53,12 +57,13 @@ async def analyze_crop_image(
     # 3. Persistir en la tabla VisionAnalysis de Supabase
     # ------------------------------------------------------------------
     record = {
-        "crop_id": crop_id,
         "diagnosis": diagnosis_result["diagnosis"],
         "suggested_treatment": diagnosis_result["suggested_treatment"],
         "confidence_percentage": diagnosis_result["confidence_percentage"],
         "analysis_date": datetime.now(timezone.utc).isoformat(),
     }
+    if crop_id:
+        record["crop_id"] = crop_id
 
     response = supabase_client.table("VisionAnalysis").insert(record).execute()
 

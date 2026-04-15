@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:urban_smart_farming/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:urban_smart_farming/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:urban_smart_farming/features/auth/domain/repositories/auth_repository.dart';
 import 'package:urban_smart_farming/features/auth/domain/usecases/login_use_case.dart';
@@ -31,8 +32,13 @@ final getIt = GetIt.instance;
 
 /// Configura todas las dependencias de la aplicación
 Future<void> setupDependencies() async {
-  // Repositorios
-  getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
+  // Auth - datasource y repositorio
+  getIt.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(),
+  );
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: getIt()),
+  );
   getIt.registerLazySingleton<CropRepository>(() => CropRepositoryImpl());
   getIt.registerLazySingleton<DashboardRepository>(
     () => DashboardRepositoryImpl(),

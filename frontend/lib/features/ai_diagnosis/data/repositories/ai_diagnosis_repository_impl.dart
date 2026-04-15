@@ -16,9 +16,8 @@ class AiDiagnosisRepositoryImpl implements AiDiagnosisRepository {
       final remoteAnalysis = await remoteDataSource.analyzeCropImage(cropId, image);
       return Right(remoteAnalysis);
     } catch (e) {
-      if (e is ServerFailure) {
-        return Left(ServerFailure(e.message));
-      }
+      if (e is ServerFailure) return Left(ServerFailure(e.message));
+      if (e is ConnectionFailure) return Left(e);
       return const Left(ConnectionFailure('Error de red al analizar la imagen.'));
     }
   }

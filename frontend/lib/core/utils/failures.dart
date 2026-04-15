@@ -7,22 +7,20 @@ abstract class Failure {
 
 /// Falla de servidor/red
 class ServerFailure extends Failure {
-  const ServerFailure([String message = 'Error de servidor']) : super(message);
+  const ServerFailure([super.message = 'Error de servidor']);
 }
 
 /// Falla de autenticación
 class AuthFailure extends Failure {
-  const AuthFailure([String message = 'Error de autenticación'])
-    : super(message);
+  const AuthFailure([super.message = 'Error de autenticación']);
 }
 
 /// Falla de validación
 class ValidationFailure extends Failure {
-  const ValidationFailure([String message = 'Error de validación'])
-    : super(message);
+  const ValidationFailure([super.message = 'Error de validación']);
 }
 
 /// Falla de caché/almacenamiento
 class CacheFailure extends Failure {
-  const CacheFailure([String message = 'Error de caché']) : super(message);
+  const CacheFailure([super.message = 'Error de caché']);
 }

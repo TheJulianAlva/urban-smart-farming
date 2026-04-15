@@ -1,17 +1,40 @@
-/// Eventos del BLoC de Diagnóstico con IA
-abstract class AiDiagnosisEvent {}
+import 'dart:io';
+import 'package:equatable/equatable.dart';
 
-/// Evento inicial
-class AiDiagnosisStarted extends AiDiagnosisEvent {}
+abstract class AiDiagnosisEvent extends Equatable {
+  const AiDiagnosisEvent();
 
-/// El usuario seleccionó una imagen de la galería
-class ImageSelected extends AiDiagnosisEvent {
-  final String imagePath;
-  ImageSelected(this.imagePath);
+  @override
+  List<Object> get props => [];
 }
 
-/// El usuario solicita iniciar el análisis de la imagen
-class AnalysisRequested extends AiDiagnosisEvent {}
+/// El usuario seleccionó una imagen de la galería.
+class ImageSelected extends AiDiagnosisEvent {
+  final String imagePath;
 
-/// El usuario quiere reiniciar el flujo para un nuevo diagnóstico
-class AnalysisReset extends AiDiagnosisEvent {}
+  const ImageSelected(this.imagePath);
+
+  @override
+  List<Object> get props => [imagePath];
+}
+
+/// El usuario solicitó analizar la imagen seleccionada.
+class AnalysisRequested extends AiDiagnosisEvent {
+  const AnalysisRequested();
+}
+
+/// El usuario reinició el flujo de diagnóstico.
+class AnalysisReset extends AiDiagnosisEvent {
+  const AnalysisReset();
+}
+
+/// Evento de análisis con imagen y cropId explícitos (uso programático).
+class AnalyzeImageEvent extends AiDiagnosisEvent {
+  final File image;
+  final String cropId;
+
+  const AnalyzeImageEvent({required this.image, required this.cropId});
+
+  @override
+  List<Object> get props => [image, cropId];
+}

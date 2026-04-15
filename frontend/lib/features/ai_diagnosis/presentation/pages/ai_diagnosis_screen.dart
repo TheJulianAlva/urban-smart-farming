@@ -20,7 +20,18 @@ class AiDiagnosisScreen extends StatelessWidget {
         title: const Text('Diagnóstico IA'),
         automaticallyImplyLeading: false,
       ),
-      body: BlocBuilder<AiDiagnosisBloc, AiDiagnosisState>(
+      body: BlocConsumer<AiDiagnosisBloc, AiDiagnosisState>(
+        listener: (context, state) {
+          if (state is AiDiagnosisError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.redAccent,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 400),

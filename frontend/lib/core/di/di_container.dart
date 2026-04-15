@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:urban_smart_farming/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:urban_smart_farming/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:urban_smart_farming/features/auth/domain/repositories/auth_repository.dart';
 import 'package:urban_smart_farming/features/auth/domain/usecases/login_use_case.dart';
@@ -19,6 +21,10 @@ import 'package:urban_smart_farming/features/dashboard/domain/usecases/get_senso
 import 'package:urban_smart_farming/features/dashboard/domain/usecases/get_actuator_statuses_use_case.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 
+import 'package:urban_smart_farming/features/ai_diagnosis/data/datasources/ai_diagnosis_remote_datasource.dart';
+import 'package:urban_smart_farming/features/ai_diagnosis/data/repositories/ai_diagnosis_repository_impl.dart';
+import 'package:urban_smart_farming/features/ai_diagnosis/domain/repositories/ai_diagnosis_repository.dart';
+import 'package:urban_smart_farming/features/ai_diagnosis/domain/usecases/analyze_crop_image.dart';
 import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_bloc.dart';
 
 /// Service locator para Dependency Injection
@@ -26,8 +32,13 @@ final getIt = GetIt.instance;
 
 /// Configura todas las dependencias de la aplicación
 Future<void> setupDependencies() async {
-  // Repositorios
-  getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
+  // Auth - datasource y repositorio
+  getIt.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(),
+  );
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: getIt()),
+  );
   getIt.registerLazySingleton<CropRepository>(() => CropRepositoryImpl());
   getIt.registerLazySingleton<DashboardRepository>(
     () => DashboardRepositoryImpl(),
@@ -46,6 +57,15 @@ Future<void> setupDependencies() async {
   // Use Cases - Dashboard
   getIt.registerLazySingleton(() => GetSensorDataUseCase(getIt()));
   getIt.registerLazySingleton(() => GetActuatorStatusesUseCase(getIt()));
+
+  // AiDiagnosis - datasource, repositorio y use case
+  getIt.registerLazySingleton<AiDiagnosisRemoteDataSource>(
+    () => AiDiagnosisRemoteDataSourceImpl(client: http.Client()),
+  );
+  getIt.registerLazySingleton<AiDiagnosisRepository>(
+    () => AiDiagnosisRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton(() => AnalyzeCropImage(getIt()));
 
   // BLoCs
   getIt.registerFactory(
@@ -73,6 +93,7 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  // AiDiagnosisBloc - placeholder sin lógica real
-  getIt.registerFactory(() => AiDiagnosisBloc());
+  getIt.registerFactory(
+    () => AiDiagnosisBloc(analyzeCropImage: getIt()),
+  );
 }

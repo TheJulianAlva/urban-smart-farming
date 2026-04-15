@@ -17,7 +17,9 @@ from app.core.config import settings
 # Inicialización del cliente
 # ---------------------------------------------------------------------------
 
+# Se usa el service role key para que el backend pueda operar sin restricciones
+# de RLS. El anon key (supabase_key) es para el cliente Flutter con RLS activo.
 supabase_client: Client = create_client(
     supabase_url=settings.supabase_url,
-    supabase_key=settings.supabase_key,
+    supabase_key=settings.supabase_service_key,
 )

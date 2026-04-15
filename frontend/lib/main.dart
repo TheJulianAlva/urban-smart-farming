@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:urban_smart_farming/core/config/app_config.dart';
 import 'package:urban_smart_farming/core/di/di_container.dart';
 import 'package:urban_smart_farming/core/routing/app_router.dart';
 import 'package:urban_smart_farming/core/theme/app_theme.dart';
@@ -10,6 +12,12 @@ import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_d
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Supabase
+  await Supabase.initialize(
+    url: AppConfig.supabaseUrl,
+    anonKey: AppConfig.supabaseAnonKey,
+  );
 
   // Configurar dependencias
   await setupDependencies();

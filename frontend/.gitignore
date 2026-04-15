@@ -44,5 +44,12 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Flutter generated plugin registrants (auto-generated)
+linux/flutter/generated_plugin_registrant.cc
+linux/flutter/generated_plugins.cmake
+macos/Flutter/GeneratedPluginRegistrant.swift
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugins.cmake
+
 # Configuración local con secrets
 lib/core/config/app_config.dart

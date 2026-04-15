@@ -39,9 +39,10 @@ app.add_middleware(
 # Registro de Routers
 # ---------------------------------------------------------------------------
 
-from app.routers import vision
+from app.routers import users, vision
 
 app.include_router(vision.router, prefix="/api/v1")
+app.include_router(users.router, prefix="/api/v1")
 
 
 # ---------------------------------------------------------------------------

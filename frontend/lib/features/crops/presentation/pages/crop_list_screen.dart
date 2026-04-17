@@ -218,7 +218,10 @@ class _CropCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: InkWell(
         onTap: () {
-          context.push('/crops/${crop.id}', extra: {'cropName': crop.name});
+          context.push('/crops/${crop.id}', extra: {
+            'cropName': crop.name,
+            'cropProfile': crop.profile,
+          });
         },
         child: Padding(
           padding: const EdgeInsets.all(12),

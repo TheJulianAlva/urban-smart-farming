@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:urban_smart_farming/features/control/presentation/pages/control_screen.dart';
 import 'package:urban_smart_farming/features/analytics/presentation/pages/analytics_screen.dart';
@@ -14,10 +15,12 @@ import 'package:go_router/go_router.dart';
 class CropDetailScreen extends StatelessWidget {
   final String cropId;
   final String cropName;
+  final PlantProfile? cropProfile;
 
   const CropDetailScreen({
     required this.cropId,
     this.cropName = 'Cultivo',
+    this.cropProfile,
     super.key,
   });
 
@@ -45,7 +48,7 @@ class CropDetailScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            DashboardScreen(cropId: cropId),
+            DashboardScreen(cropId: cropId, cropProfile: cropProfile),
             ControlScreen(cropId: cropId),
             AnalyticsScreen(cropId: cropId),
             BlocProvider(

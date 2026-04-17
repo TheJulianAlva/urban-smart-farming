@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:urban_smart_farming/core/utils/failures.dart';
-import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
-import 'package:urban_smart_farming/features/crops/domain/repositories/crop_repository.dart';
-import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/data/models/crop_model.dart';
 import 'package:urban_smart_farming/features/crops/data/models/mock_pot_factory.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/domain/repositories/crop_repository.dart';
 
 /// Implementación mock del repositorio de cultivos
 class CropRepositoryImpl implements CropRepository {
@@ -47,29 +49,60 @@ class CropRepositoryImpl implements CropRepository {
   @override
   Future<Either<Failure, List<CropEntity>>> getUserCrops() async {
     try {
-      // Simular latencia de red
-      await Future.delayed(const Duration(milliseconds: 500));
+      final client = Supabase.instance.client;
+      final userId = client.auth.currentUser?.id;
+      if (userId == null) return const Left(AuthFailure('Usuario no autenticado'));
 
-      // Retornar solo cultivos activos
-      final activeCrops =
-          _crops.where((c) => c.status == CropStatus.active).toList();
-      return Right(activeCrops);
+      final response = await client
+          .from('Crop')
+          .select('*, CropProfile(*)')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final crops = (response as List<dynamic>).map((row) {
+        final entity = CropModel.fromJson(row as Map<String, dynamic>);
+        return entity.copyWith(
+          pot: MockPotFactory.createMockPot(
+            id: 'pot-${entity.id}',
+            cropId: entity.id,
+          ),
+        );
+      }).toList();
+
+      return Right(crops);
+    } on PostgrestException catch (e) {
+      return Left(ServerFailure('Error de base de datos: ${e.message}'));
     } catch (e) {
-      return const Left(ServerFailure('Error al obtener cultivos'));
+      return Left(ServerFailure('Error al obtener cultivos: $e'));
     }
   }
 
   @override
   Future<Either<Failure, CropEntity>> getCropById(String cropId) async {
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
+      final client = Supabase.instance.client;
+      final userId = client.auth.currentUser?.id;
+      if (userId == null) return const Left(AuthFailure('Usuario no autenticado'));
 
-      final crop = _crops.firstWhere(
-        (c) => c.id == cropId,
-        orElse: () => throw Exception('Cultivo no encontrado'),
-      );
+      final response = await client
+          .from('Crop')
+          .select('*, CropProfile(*)')
+          .eq('id', cropId)
+          .eq('user_id', userId)
+          .single();
 
-      return Right(crop);
+      final entity = CropModel.fromJson(response as Map<String, dynamic>);
+      return Right(entity.copyWith(
+        pot: MockPotFactory.createMockPot(
+          id: 'pot-${entity.id}',
+          cropId: entity.id,
+        ),
+      ));
+    } on PostgrestException catch (e) {
+      if (e.code == 'PGRST116') {
+        return Left(ServerFailure('Cultivo con ID $cropId no encontrado'));
+      }
+      return Left(ServerFailure('Error de base de datos: ${e.message}'));
     } catch (e) {
       return Left(ServerFailure('Cultivo con ID $cropId no encontrado'));
     }

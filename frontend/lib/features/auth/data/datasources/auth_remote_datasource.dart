@@ -49,12 +49,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
         data: {'name': name},
       );
-      final user = response.user;
-      if (user == null) {
-        throw const AuthFailure(
-          'Registro exitoso. Revisá tu email para confirmar la cuenta.',
-        );
+      if (response.session == null) {
+        throw const EmailConfirmationFailure();
       }
+      final user = response.user;
+      if (user == null) throw const AuthFailure('No se pudo completar el registro.');
       return _toEntity(user);
     } on AuthException catch (e) {
       throw AuthFailure(_mapAuthError(e.message));

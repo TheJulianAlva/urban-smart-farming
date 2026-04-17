@@ -37,6 +37,8 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
       return Right(user);
+    } on EmailConfirmationFailure catch (e) {
+      return Left(e);
     } on AuthFailure catch (e) {
       return Left(e);
     } catch (_) {

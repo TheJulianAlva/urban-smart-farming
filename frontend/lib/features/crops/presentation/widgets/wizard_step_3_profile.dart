@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/presentation/widgets/profile_card.dart';
 
 /// Paso 3 del Wizard: Configuración de Perfil
 class WizardStep3Profile extends StatefulWidget {
@@ -171,84 +172,15 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
 
         // Lista de perfiles predefinidos
         ...PredefinedProfiles.profiles.map((profile) {
-          final isSelected = _selectedProfile?.id == profile.id;
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            color:
-                isSelected
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : null,
-            child: ListTile(
-              leading: Icon(
-                Icons.eco,
-                color:
-                    isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.green,
-              ),
-              title: Text(
-                profile.name,
-                style: TextStyle(
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 4),
-                  Text(profile.description),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      Chip(
-                        label: Text(
-                          '💧 ${profile.minSoilMoisture.toStringAsFixed(0)}-${profile.maxSoilMoisture.toStringAsFixed(0)}%',
-                          style: const TextStyle(fontSize: 11),
-                        ),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      Chip(
-                        label: Text(
-                          '🌡️ ${profile.minTemperature.toStringAsFixed(0)}-${profile.maxTemperature.toStringAsFixed(0)}°C',
-                          style: const TextStyle(fontSize: 11),
-                        ),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      Chip(
-                        label: Text(
-                          '☀️ ${profile.requiredLightHours}h',
-                          style: const TextStyle(fontSize: 11),
-                        ),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      Chip(
-                        label: Text(
-                          '🧪 pH ${profile.minPH.toStringAsFixed(1)}-${profile.maxPH.toStringAsFixed(1)}',
-                          style: const TextStyle(fontSize: 11),
-                        ),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              trailing:
-                  isSelected
-                      ? Icon(
-                        Icons.check_circle,
-                        color: Theme.of(context).colorScheme.primary,
-                      )
-                      : null,
-              isThreeLine: true,
-              onTap: () {
-                setState(() {
-                  _selectedProfile = profile;
-                  _notifyChanges();
-                });
-              },
-            ),
+          return ProfileCard(
+            profile: profile,
+            isSelected: _selectedProfile?.id == profile.id,
+            onTap: () {
+              setState(() {
+                _selectedProfile = profile;
+                _notifyChanges();
+              });
+            },
           );
         }),
       ],

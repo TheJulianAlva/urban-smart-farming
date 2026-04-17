@@ -24,3 +24,10 @@ class ValidationFailure extends Failure {
 class CacheFailure extends Failure {
   const CacheFailure([super.message = 'Error de caché']);
 }
+
+/// Falla de confirmación de email pendiente
+class EmailConfirmationFailure extends Failure {
+  const EmailConfirmationFailure(
+      [super.message =
+          'Registro exitoso. Por favor, revisa tu email y confirma tu cuenta antes de iniciar sesión.']);
+}

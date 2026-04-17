@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:urban_smart_farming/core/utils/failures.dart';
 import 'package:urban_smart_farming/features/auth/domain/usecases/login_use_case.dart';
 import 'package:urban_smart_farming/features/auth/domain/usecases/register_use_case.dart';
 import 'package:urban_smart_farming/features/auth/domain/usecases/logout_use_case.dart';
@@ -54,7 +55,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     result.fold(
-      (failure) => emit(AuthError(failure.message)),
+      (failure) {
+        if (failure is EmailConfirmationFailure) {
+          emit(const AuthRegistrationPending());
+        } else {
+          emit(AuthError(failure.message));
+        }
+      },
       (user) => emit(AuthSuccess(user)),
     );
   }

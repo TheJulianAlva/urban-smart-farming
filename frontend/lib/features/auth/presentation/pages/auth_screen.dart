@@ -54,10 +54,19 @@ class _AuthScreenState extends State<AuthScreen>
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
-            // Navegar a la lista de cultivos tras autenticación exitosa
             context.go('/');
+          } else if (state is AuthRegistrationPending) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Registro exitoso. Por favor, revisa tu email y confirma tu cuenta antes de iniciar sesión.',
+                ),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 6),
+              ),
+            );
+            _tabController.animateTo(0);
           } else if (state is AuthError) {
-            // Mostrar error
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

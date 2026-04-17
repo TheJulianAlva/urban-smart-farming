@@ -37,3 +37,8 @@ class AuthError extends AuthState {
 
 /// Estado de logout exitoso
 class AuthLoggedOut extends AuthState {}
+
+/// Estado de registro exitoso con confirmación de email pendiente
+class AuthRegistrationPending extends AuthState {
+  const AuthRegistrationPending();
+}

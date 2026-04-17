@@ -93,7 +93,10 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  getIt.registerFactory(
-    () => AiDiagnosisBloc(analyzeCropImage: getIt()),
+  getIt.registerFactoryParam<AiDiagnosisBloc, String, void>(
+    (cropId, _) => AiDiagnosisBloc(
+      analyzeCropImage: getIt(),
+      cropId: cropId,
+    ),
   );
 }

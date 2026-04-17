@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:urban_smart_farming/features/control/presentation/pages/control_screen.dart';
 import 'package:urban_smart_farming/features/analytics/presentation/pages/analytics_screen.dart';
+import 'package:urban_smart_farming/features/ai_diagnosis/presentation/pages/ai_diagnosis_screen.dart';
+import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_bloc.dart';
+import 'package:urban_smart_farming/core/di/di_container.dart';
 import 'package:urban_smart_farming/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pantalla de detalle de un cultivo con pestañas (Tabs)
-/// Contiene 3 pestañas: Monitor, Control, Historial
+/// Contiene 4 pestañas: Monitor, Control, Historial, Diagnóstico IA
 class CropDetailScreen extends StatelessWidget {
   final String cropId;
+  final String cropName;
 
-  const CropDetailScreen({required this.cropId, super.key});
+  const CropDetailScreen({
+    required this.cropId,
+    this.cropName = 'Cultivo',
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Detalle del Cultivo'),
+          title: Text(cropName),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings),
@@ -30,14 +39,19 @@ class CropDetailScreen extends StatelessWidget {
               Tab(icon: Icon(Icons.dashboard), text: 'Monitor'),
               Tab(icon: Icon(Icons.tune), text: 'Control'),
               Tab(icon: Icon(Icons.analytics), text: 'Historial'),
+              Tab(icon: Icon(Icons.document_scanner), text: 'Diagnóstico'),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            DashboardScreen(cropId: cropId), // Pestaña Monitor
-            ControlScreen(cropId: cropId), // Pestaña Control
-            AnalyticsScreen(cropId: cropId), // Pestaña Historial
+            DashboardScreen(cropId: cropId),
+            ControlScreen(cropId: cropId),
+            AnalyticsScreen(cropId: cropId),
+            BlocProvider(
+              create: (_) => getIt<AiDiagnosisBloc>(param1: cropId),
+              child: AiDiagnosisScreen(cropId: cropId, cropName: cropName),
+            ),
           ],
         ),
       ),

@@ -7,52 +7,52 @@ import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_d
 import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_event.dart';
 import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_state.dart';
 
-/// Pantalla de Diagnóstico con IA
-/// Permite al usuario seleccionar una foto de su galería y obtener un
-/// diagnóstico simulado con recomendaciones detalladas.
+/// Pantalla de Diagnóstico con IA — embebida como tab en CropDetailScreen.
+/// Recibe cropId y cropName del cultivo que se está analizando.
 class AiDiagnosisScreen extends StatelessWidget {
-  const AiDiagnosisScreen({super.key});
+  final String cropId;
+  final String cropName;
+
+  const AiDiagnosisScreen({
+    required this.cropId,
+    required this.cropName,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Diagnóstico IA'),
-        automaticallyImplyLeading: false,
-      ),
-      body: BlocConsumer<AiDiagnosisBloc, AiDiagnosisState>(
-        listener: (context, state) {
-          if (state is AiDiagnosisError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.redAccent,
-                behavior: SnackBarBehavior.floating,
+    return BlocConsumer<AiDiagnosisBloc, AiDiagnosisState>(
+      listener: (context, state) {
+        if (state is AiDiagnosisError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 400),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.04),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
               ),
             );
-          }
-        },
-        builder: (context, state) {
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 400),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeIn,
-            transitionBuilder: (child, animation) {
-              return FadeTransition(
-                opacity: animation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.04),
-                    end: Offset.zero,
-                  ).animate(animation),
-                  child: child,
-                ),
-              );
-            },
-            child: _buildStateView(state),
-          );
-        },
-      ),
+          },
+          child: _buildStateView(state),
+        );
+      },
     );
   }
 
@@ -72,7 +72,7 @@ class AiDiagnosisScreen extends StatelessWidget {
     if (state is AiDiagnosisResult) {
       return _ResultView(key: const ValueKey('result'), result: state);
     }
-    return const _InitialView(key: ValueKey('initial'));
+    return _InitialView(key: const ValueKey('initial'), cropName: cropName);
   }
 }
 
@@ -80,7 +80,8 @@ class AiDiagnosisScreen extends StatelessWidget {
 // ESTADO INICIAL — Hero section + botón de selección (con entrada animada)
 // ─────────────────────────────────────────────────────────────────────────────
 class _InitialView extends StatefulWidget {
-  const _InitialView({super.key});
+  final String cropName;
+  const _InitialView({super.key, required this.cropName});
 
   @override
   State<_InitialView> createState() => _InitialViewState();
@@ -173,6 +174,16 @@ class _InitialViewState extends State<_InitialView>
                   'Diagnóstico Inteligente',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                Text(
+                  widget.cropName,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.primaryGreen,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:urban_smart_farming/features/crops/presentation/pages/crop_list_screen.dart';
-import 'package:urban_smart_farming/features/ai_diagnosis/presentation/pages/ai_diagnosis_screen.dart';
 import 'package:urban_smart_farming/features/settings/presentation/pages/settings_screen.dart';
 
 /// Pantalla principal de navegación con BottomNavigationBar
-/// Contiene las 3 pantallas principales: Mi Jardín, Diagnóstico IA, Ajustes
+/// Contiene las 2 pantallas principales: Mi Jardín, Ajustes
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
 
@@ -14,16 +13,13 @@ class MainNavScreen extends StatefulWidget {
 
 class _MainNavScreenState extends State<MainNavScreen> {
   int _currentIndex = 0;
-  // Key para forzar recarga de CropListScreen
   Key _gardenKey = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
-    // Lista de pantallas principales
     final List<Widget> screens = [
-      CropListScreen(key: _gardenKey), // Mi Jardín
-      const AiDiagnosisScreen(), // Diagnóstico IA (placeholder)
-      const SettingsScreen(), // Ajustes
+      CropListScreen(key: _gardenKey),
+      const SettingsScreen(),
     ];
 
     return Scaffold(
@@ -32,7 +28,6 @@ class _MainNavScreenState extends State<MainNavScreen> {
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
-            // Si se toca "Mi Jardín" nuevamente, regenerar key para recargar
             if (index == 0 && _currentIndex == 0) {
               _gardenKey = UniqueKey();
             }
@@ -41,10 +36,6 @@ class _MainNavScreenState extends State<MainNavScreen> {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.spa), label: 'Mi Jardín'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
-            label: 'Diagnóstico IA',
-          ),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ajustes'),
         ],
       ),

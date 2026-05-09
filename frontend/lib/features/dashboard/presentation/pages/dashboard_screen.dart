@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:go_router/go_router.dart';
 import 'package:urban_smart_farming/core/di/di_container.dart';
-//import 'package:urban_smart_farming/core/routing/app_router.dart';
 import 'package:urban_smart_farming/core/theme/app_theme.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_event.dart';
 import 'package:urban_smart_farming/features/dashboard/presentation/bloc/dashboard_state.dart';
@@ -12,8 +11,9 @@ import 'package:urban_smart_farming/features/dashboard/presentation/widgets/metr
 /// Pantalla principal del Dashboard para un cultivo específico
 class DashboardScreen extends StatelessWidget {
   final String cropId;
+  final PlantProfile? cropProfile;
 
-  const DashboardScreen({required this.cropId, super.key});
+  const DashboardScreen({required this.cropId, this.cropProfile, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,6 @@ class DashboardScreen extends StatelessWidget {
 
             if (state is DashboardLoaded) {
               final sensorData = state.sensorData;
-              final actuators = state.actuators;
 
               return RefreshIndicator(
                 onRefresh: () async {
@@ -121,49 +120,10 @@ class DashboardScreen extends StatelessWidget {
                         ],
                       ),
 
-                      const SizedBox(height: 32),
-
-                      // Título actuadores
-                      Text(
-                        'Estado de Actuadores',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Lista de actuadores
-                      ...actuators.map(
-                        (actuator) => Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            leading: Icon(
-                              _getActuatorIcon(actuator.type),
-                              color:
-                                  actuator.isOn
-                                      ? AppTheme.primaryGreen
-                                      : Colors.grey,
-                            ),
-                            title: Text(actuator.name),
-                            trailing: Chip(
-                              label: Text(
-                                actuator.isOn ? 'ON' : 'OFF',
-                                style: TextStyle(
-                                  color:
-                                      actuator.isOn
-                                          ? AppTheme.primaryGreen
-                                          : Colors.grey,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              backgroundColor:
-                                  actuator.isOn
-                                      ? AppTheme.primaryGreen.withValues(
-                                        alpha: 0.2,
-                                      )
-                                      : Colors.grey.withValues(alpha: 0.2),
-                            ),
-                          ),
-                        ),
-                      ),
+                      if (cropProfile != null) ...[
+                        const SizedBox(height: 32),
+                        _ProfileSection(profile: cropProfile!),
+                      ],
                     ],
                   ),
                 ),
@@ -180,17 +140,104 @@ class DashboardScreen extends StatelessWidget {
   String _formatTime(DateTime time) {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}';
   }
+}
 
-  IconData _getActuatorIcon(type) {
-    switch (type.toString()) {
-      case 'ActuatorType.pump':
-        return Icons.water;
-      case 'ActuatorType.light':
-        return Icons.lightbulb;
-      case 'ActuatorType.fan':
-        return Icons.air;
-      default:
-        return Icons.device_unknown;
-    }
+// ─────────────────────────────────────────────────────────────────────────────
+// Sección de Perfil de Cultivo
+// ─────────────────────────────────────────────────────────────────────────────
+class _ProfileSection extends StatelessWidget {
+  final PlantProfile profile;
+
+  const _ProfileSection({required this.profile});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.eco, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Perfil: ${profile.name}',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          profile.description,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: AppTheme.textSecondary),
+        ),
+        const SizedBox(height: 16),
+        _ProfileParamRow(
+          icon: Icons.thermostat,
+          label: 'Temperatura óptima',
+          value:
+              '${profile.minTemperature.toStringAsFixed(0)} – ${profile.maxTemperature.toStringAsFixed(0)} °C',
+        ),
+        _ProfileParamRow(
+          icon: Icons.water_drop,
+          label: 'Humedad del suelo',
+          value:
+              '${profile.minSoilMoisture.toStringAsFixed(0)} – ${profile.maxSoilMoisture.toStringAsFixed(0)} %',
+        ),
+        _ProfileParamRow(
+          icon: Icons.science,
+          label: 'pH del suelo',
+          value:
+              '${profile.minPH.toStringAsFixed(1)} – ${profile.maxPH.toStringAsFixed(1)}',
+        ),
+        _ProfileParamRow(
+          icon: Icons.wb_sunny,
+          label: 'Horas de luz diarias',
+          value: '${profile.requiredLightHours} h',
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileParamRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _ProfileParamRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: AppTheme.primaryGreen),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ],
+      ),
+    );
   }
 }

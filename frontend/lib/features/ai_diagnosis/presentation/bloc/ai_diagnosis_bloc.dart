@@ -6,8 +6,9 @@ import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_d
 
 class AiDiagnosisBloc extends Bloc<AiDiagnosisEvent, AiDiagnosisState> {
   final AnalyzeCropImage analyzeCropImage;
+  final String cropId;
 
-  AiDiagnosisBloc({required this.analyzeCropImage})
+  AiDiagnosisBloc({required this.analyzeCropImage, required this.cropId})
       : super(AiDiagnosisInitial()) {
     on<ImageSelected>(_onImageSelected);
     on<AnalysisRequested>(_onAnalysisRequested);
@@ -32,7 +33,7 @@ class AiDiagnosisBloc extends Bloc<AiDiagnosisEvent, AiDiagnosisState> {
     final imagePath = currentState.imagePath;
     emit(AiDiagnosisAnalyzing(imagePath));
 
-    final failureOrAnalysis = await analyzeCropImage('', File(imagePath));
+    final failureOrAnalysis = await analyzeCropImage(cropId, File(imagePath));
 
     failureOrAnalysis.fold(
       (failure) => emit(AiDiagnosisError(message: failure.message)),

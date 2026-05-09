@@ -27,6 +27,9 @@ import 'package:urban_smart_farming/features/ai_diagnosis/domain/repositories/ai
 import 'package:urban_smart_farming/features/ai_diagnosis/domain/usecases/analyze_crop_image.dart';
 import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_bloc.dart';
 
+import 'package:urban_smart_farming/features/crops/domain/usecases/get_user_profiles_use_case.dart';
+import 'package:urban_smart_farming/features/crops/presentation/bloc/profiles_bloc.dart';
+
 /// Service locator para Dependency Injection
 final getIt = GetIt.instance;
 
@@ -53,6 +56,7 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(() => GetUserCropsUseCase(getIt()));
   getIt.registerLazySingleton(() => CreateCropUseCase(getIt()));
   getIt.registerLazySingleton(() => DeleteCropUseCase(getIt()));
+  getIt.registerLazySingleton(() => GetUserProfilesUseCase(getIt()));
 
   // Use Cases - Dashboard
   getIt.registerLazySingleton(() => GetSensorDataUseCase(getIt()));
@@ -84,6 +88,10 @@ Future<void> setupDependencies() async {
     ),
   );
 
+  getIt.registerFactory(
+    () => ProfilesBloc(getUserProfilesUseCase: getIt()),
+  );
+
   // DashboardBloc recibe cropId como parámetro
   getIt.registerFactoryParam<DashboardBloc, String, void>(
     (cropId, _) => DashboardBloc(
@@ -93,7 +101,10 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  getIt.registerFactory(
-    () => AiDiagnosisBloc(analyzeCropImage: getIt()),
+  getIt.registerFactoryParam<AiDiagnosisBloc, String, void>(
+    (cropId, _) => AiDiagnosisBloc(
+      analyzeCropImage: getIt(),
+      cropId: cropId,
+    ),
   );
 }

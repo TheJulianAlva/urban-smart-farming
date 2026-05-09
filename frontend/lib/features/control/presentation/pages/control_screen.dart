@@ -75,7 +75,6 @@ class ControlScreen extends StatelessWidget {
     final isPumpOn = isLoaded ? state.isPumpOn : false;
     final isLightOn = isLoaded ? state.isLightOn : false;
     final lightIntensity = isLoaded ? state.lightIntensity : 0;
-    final isFanOn = isLoaded ? state.isFanOn : false;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -306,48 +305,6 @@ class ControlScreen extends StatelessWidget {
                               : null,
                     ),
                   ],
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Control de Ventilación
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(Icons.air, color: isFanOn ? Colors.teal : Colors.grey),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Ventilación',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(
-                          isFanOn ? 'Activa' : 'Inactiva',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.copyWith(
-                            color: isFanOn ? Colors.teal : Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Switch(
-                    value: isFanOn,
-                    onChanged:
-                        (!isAutomaticMode && isLoaded)
-                            ? (value) {
-                              context.read<ControlBloc>().add(ToggleFan(value));
-                            }
-                            : null,
-                  ),
                 ],
               ),
             ),

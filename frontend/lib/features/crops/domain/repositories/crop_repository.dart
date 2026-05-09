@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:urban_smart_farming/core/utils/failures.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
 
 /// Repositorio de Cultivos
 abstract class CropRepository {
@@ -22,4 +23,7 @@ abstract class CropRepository {
 
   /// Eliminar cultivo
   Future<Either<Failure, void>> deleteCrop(String cropId);
+
+  /// Obtener perfiles de cultivo personalizados del usuario actual
+  Future<Either<Failure, List<PlantProfile>>> getUserProfiles();
 }

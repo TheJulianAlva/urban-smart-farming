@@ -2,10 +2,12 @@ import 'package:go_router/go_router.dart';
 import 'package:urban_smart_farming/features/auth/presentation/pages/auth_screen.dart';
 import 'package:urban_smart_farming/features/main/main_nav_screen.dart';
 import 'package:urban_smart_farming/features/main/crop_detail_screen.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
 import 'package:urban_smart_farming/features/crops/presentation/pages/crop_creation_wizard_screen.dart';
-import 'package:urban_smart_farming/features/crops/presentation/pages/dashboard_screen.dart';
-import 'package:urban_smart_farming/features/crops/presentation/pages/control_screen.dart';
+import 'package:urban_smart_farming/features/dashboard/presentation/pages/dashboard_screen.dart';
+import 'package:urban_smart_farming/features/control/presentation/pages/control_screen.dart';
 import 'package:urban_smart_farming/features/settings/presentation/pages/settings_screen.dart';
+import 'package:urban_smart_farming/features/crops/presentation/pages/crop_profiles_screen.dart';
 
 /// Configuración de rutas de la aplicación usando GoRouter
 class AppRouter {
@@ -14,6 +16,7 @@ class AppRouter {
   static const String cropDetail = '/crops/:id';
   static const String createCrop = '/create-crop';
   static const String aiDiagnosis = '/ai-diagnosis'; // Placeholder
+  static const String profiles = '/profiles';
 
   // Legacy routes - deprecated
   static const String crops = '/crops';
@@ -38,7 +41,14 @@ class AppRouter {
         name: 'cropDetail',
         builder: (context, state) {
           final cropId = state.pathParameters['id']!;
-          return CropDetailScreen(cropId: cropId);
+          final extra = state.extra as Map<String, dynamic>?;
+          final cropName = extra?['cropName'] as String? ?? 'Cultivo';
+          final cropProfile = extra?['cropProfile'] as PlantProfile?;
+          return CropDetailScreen(
+            cropId: cropId,
+            cropName: cropName,
+            cropProfile: cropProfile,
+          );
         },
       ),
       GoRoute(
@@ -66,6 +76,11 @@ class AppRouter {
         path: settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: profiles,
+        name: 'profiles',
+        builder: (context, state) => const CropProfilesScreen(),
       ),
     ],
   );

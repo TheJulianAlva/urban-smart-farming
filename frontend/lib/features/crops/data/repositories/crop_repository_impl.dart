@@ -194,4 +194,43 @@ class CropRepositoryImpl implements CropRepository {
       return const Left(ServerFailure('Error al eliminar cultivo'));
     }
   }
+
+  @override
+  Future<Either<Failure, List<PlantProfile>>> getUserProfiles() async {
+    try {
+      final client = Supabase.instance.client;
+      final userId = client.auth.currentUser?.id;
+      if (userId == null) return const Left(AuthFailure('Usuario no autenticado'));
+
+      final response = await client
+          .from('CropProfile')
+          .select()
+          .eq('creator_id', userId)
+          .order('profile_name', ascending: true);
+
+      final profiles = (response as List<dynamic>).map((row) {
+        final json = row as Map<String, dynamic>;
+        return PlantProfile(
+          id: json['id'] as String,
+          name: (json['profile_name'] as String?) ?? 'Sin nombre',
+          description: 'Perfil personalizado',
+          minSoilMoisture: (json['min_moisture'] as num?)?.toDouble() ?? 50.0,
+          maxSoilMoisture: (json['max_moisture'] as num?)?.toDouble() ?? 80.0,
+          minTemperature: (json['ideal_temperature'] as num?)?.toDouble() ?? 15.0,
+          maxTemperature: (json['ideal_temperature'] as num?)?.toDouble() ?? 30.0,
+          minPH: 6.0,
+          maxPH: 7.5,
+          requiredLightHours: 6,
+          optimalLux: 8000,
+          isPredefined: false,
+        );
+      }).toList();
+
+      return Right(profiles);
+    } on PostgrestException catch (e) {
+      return Left(ServerFailure('Error de base de datos: ${e.message}'));
+    } catch (e) {
+      return Left(ServerFailure('Error al obtener perfiles: $e'));
+    }
+  }
 }

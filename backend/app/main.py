@@ -7,6 +7,7 @@ Configura la instancia de FastAPI, registra los middlewares globales
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.services.mqtt_handler import start_mqtt_listener
 
 # ---------------------------------------------------------------------------
 # Instancia de la Aplicación
@@ -17,6 +18,11 @@ app = FastAPI(
     description="Backend de la plataforma IoT para monitoreo y automatización de cultivos urbanos.",
     version="0.1.0",
 )
+
+@app.on_event("startup")
+def startup_event():
+    """Inicia la escucha de mensajes IoT."""
+    start_mqtt_listener()
 
 # ---------------------------------------------------------------------------
 # Middleware de CORS

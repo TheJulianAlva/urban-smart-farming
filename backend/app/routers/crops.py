@@ -40,3 +40,13 @@ async def get_crop(crop_id: UUID, user: dict = Depends(get_current_user)):
     if not crop:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Crop not found")
     return crop
+
+@router.delete(
+    "/{crop_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Eliminar un cultivo",
+    description="Elimina un cultivo del usuario autenticado y todos sus datos asociados."
+)
+async def delete_crop(crop_id: UUID, user: dict = Depends(get_current_user)):
+    await crops_service.delete_crop(crop_id, user)
+    return None

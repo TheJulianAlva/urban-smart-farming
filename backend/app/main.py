@@ -1,8 +1,8 @@
 """
-Punto de entrada principal de API.
+Punto de entrada principal de la API.
 
 Configura la instancia de FastAPI, registra los middlewares globales
-(CORS) y define los endpoints base del sistema.
+(CORS) y todos los routers del sistema.
 """
 
 from fastapi import FastAPI
@@ -26,11 +26,6 @@ def startup_event():
 
 # ---------------------------------------------------------------------------
 # Middleware de CORS
-#
-# Permite que la aplicación Flutter (móvil o web) y herramientas de desarrollo
-# (Postman, Swagger) puedan comunicarse con esta API sin ser bloqueadas por
-# las políticas de seguridad del navegador.
-#
 # ---------------------------------------------------------------------------
 
 app.add_middleware(
@@ -43,27 +38,29 @@ app.add_middleware(
 
 # ---------------------------------------------------------------------------
 # Registro de Routers
+#
+# Nota: 'actuators' y 'devices' comparten el prefix /api/v1/devices.
+# Los paths no colisionan: devices usa /register y /{id},
+# actuators usa /{id}/actuate.
 # ---------------------------------------------------------------------------
 
-from app.routers import users, vision
+from app.routers import users, vision, crops, devices, alerts, history, actuators
 
-app.include_router(vision.router, prefix="/api/v1")
-app.include_router(users.router, prefix="/api/v1")
-
+app.include_router(vision.router,    prefix="/api/v1")
+app.include_router(users.router,     prefix="/api/v1")
+app.include_router(crops.router)
+app.include_router(devices.router)
+app.include_router(alerts.router)
+app.include_router(history.router)
+app.include_router(actuators.router)
 
 # ---------------------------------------------------------------------------
 # Endpoints Base
 # ---------------------------------------------------------------------------
 
-
 @app.get("/", tags=["Health"])
 async def health_check():
-    """
-    Prueba de vida del servidor.
-
-    Devuelve un mensaje confirmando que la API está en línea.
-    Útil para que herramientas de monitoreo validen la disponibilidad del servicio.
-    """
+    """Prueba de vida del servidor."""
     return {
         "status": "online",
         "message": "Urban Smart Farming API is running!",

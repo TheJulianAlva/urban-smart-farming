@@ -3,23 +3,18 @@ from uuid import UUID
 from typing import Optional
 from datetime import datetime
 
-# 🚨 Nota: Los comentarios y docstrings van en Español
+# Nota: Los comentarios y docstrings van en Español
+
 
 class DeviceCreate(BaseModel):
-    """
-    Modelo de entrada para registrar un nuevo dispositivo físico (maceta/ESP32).
-    """
+    """Modelo de entrada para registrar un nuevo dispositivo físico (ESP32)."""
     mac_address: str = Field(..., description="Dirección MAC única del dispositivo")
-    crop_id: UUID = Field(..., description="UUID del cultivo asociado al dispositivo")
+    crop_id: UUID = Field(..., description="UUID del cultivo al que se asocia el dispositivo")
 
 
 class DeviceResponse(BaseModel):
-    """
-    Modelo de salida que representa un dispositivo registrado en el sistema.
-    """
+    """Modelo de salida que representa un dispositivo registrado en el sistema."""
     id: UUID = Field(..., description="Identificador único del dispositivo")
-    user_id: str = Field(..., description="Identificador del usuario propietario (cifrado)")
+    crop_id: Optional[UUID] = Field(None, description="UUID del cultivo asociado")
     mac_address: str = Field(..., description="Dirección MAC única del dispositivo")
-    crop_id: UUID = Field(..., description="UUID del cultivo asociado")
-    created_at: datetime = Field(..., description="Fecha de creación en formato ISO8601")
-    updated_at: Optional[datetime] = Field(None, description="Fecha de última actualización en formato ISO8601")
+    last_heartbeat: Optional[datetime] = Field(None, description="Última conexión MQTT registrada")

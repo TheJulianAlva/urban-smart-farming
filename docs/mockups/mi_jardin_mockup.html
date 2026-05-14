@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boceto — Mi Jardín</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #e8f5e9;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 16px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  .material-icons-round { font-size: inherit; vertical-align: middle; }
+
+  .phone {
+    width: 375px;
+    background: #f5f5f5;
+    border-radius: 44px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 0 0 10px #1a1a1a;
+    overflow: hidden;
+  }
+
+  /* Status bar */
+  .status-bar {
+    background: #fff;
+    padding: 10px 24px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #212121;
+    font-weight: 600;
+  }
+  .status-right { display: flex; align-items: center; gap: 6px; }
+  .status-right .material-icons-round { font-size: 14px; }
+
+  /* App bar */
+  .app-bar {
+    background: #fff;
+    padding: 10px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .app-bar-left h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #212121;
+    line-height: 1;
+  }
+  .app-bar-left .greeting {
+    font-size: 12px;
+    color: #9e9e9e;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .app-bar-left .greeting .material-icons-round { font-size: 14px; color: #FFB300; }
+  .notif-btn {
+    position: relative;
+    width: 40px; height: 40px;
+    background: #f5f5f5;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #424242;
+    cursor: pointer;
+  }
+  .notif-btn .material-icons-round { font-size: 22px; }
+  .notif-badge {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 16px; height: 16px;
+    background: #E53935;
+    border-radius: 50%;
+    font-size: 9px;
+    color: #fff;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+  }
+
+  /* Lista de cultivos */
+  .crops-list {
+    padding: 12px 14px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Tarjeta de cultivo */
+  .crop-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    display: flex;
+  }
+  .crop-card .accent {
+    width: 5px;
+    flex-shrink: 0;
+    border-radius: 20px 0 0 20px;
+  }
+  .accent-green  { background: #4CAF50; }
+  .accent-orange { background: #FF9800; }
+
+  .crop-card .card-inner {
+    flex: 1;
+    padding: 14px 12px 14px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Avatar del cultivo */
+  .crop-avatar {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .crop-avatar .material-icons-round { font-size: 28px; color: #fff; }
+  .avatar-red    { background: linear-gradient(135deg, #ef9a9a, #E53935); }
+  .avatar-yellow { background: linear-gradient(135deg, #fff176, #F9A825); }
+  .avatar-teal   { background: linear-gradient(135deg, #80cbc4, #00897B); }
+
+  .crop-info { flex: 1; min-width: 0; }
+  .crop-name {
+    font-size: 15px; font-weight: 700; color: #212121;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .crop-type { font-size: 12px; color: #9e9e9e; margin-top: 1px; }
+
+  /* Chips de sensores */
+  .sensor-chips {
+    display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;
+  }
+  .s-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 11px; font-weight: 600;
+  }
+  .s-chip .material-icons-round { font-size: 13px; }
+  .s-ok   { background: rgba(76,175,80,.12);  color: #2E7D32; }
+  .s-warn { background: rgba(255,152,0,.12);  color: #E65100; }
+  .s-none { background: #f5f5f5; color: #9e9e9e; }
+
+  /* Footer de la tarjeta */
+  .crop-footer {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 8px;
+    font-size: 11px; color: #9e9e9e;
+  }
+  .crop-footer span {
+    display: flex; align-items: center; gap: 3px;
+  }
+  .crop-footer .material-icons-round { font-size: 13px; }
+
+  /* Chevron */
+  .chevron { color: #ccc; flex-shrink: 0; }
+  .chevron .material-icons-round { font-size: 20px; }
+
+  /* FAB */
+  .fab-area { position: relative; height: 0; }
+  .fab {
+    position: absolute;
+    bottom: -44px; right: 20px;
+    width: 52px; height: 52px;
+    background: #4CAF50;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(76,175,80,.5);
+  }
+  .fab .material-icons-round { font-size: 28px; }
+
+  /* Bottom nav */
+  .tab-bar {
+    background: #fff;
+    border-top: 1px solid #eee;
+    display: flex;
+    padding: 8px 0 18px;
+    margin-top: 60px;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 500; color: #9e9e9e;
+  }
+  .tab-item.active { color: #4CAF50; }
+  .tab-item .material-icons-round { font-size: 24px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-right">
+      <span class="material-icons-round">signal_cellular_alt</span>
+      <span class="material-icons-round">wifi</span>
+      <span class="material-icons-round">battery_full</span>
+    </div>
+  </div>
+
+  <!-- App bar -->
+  <div class="app-bar">
+    <div class="app-bar-left">
+      <h1>Mi Jardín</h1>
+      <div class="greeting">
+        <span class="material-icons-round">wb_sunny</span>
+        Buenos días, Julia
+      </div>
+    </div>
+    <div class="notif-btn">
+      <span class="material-icons-round">notifications</span>
+      <div class="notif-badge">2</div>
+    </div>
+  </div>
+
+  <!-- Lista de cultivos -->
+  <div class="crops-list">
+
+    <!-- Cultivo 1: Óptimo -->
+    <div class="crop-card">
+      <div class="accent accent-green"></div>
+      <div class="card-inner">
+        <div class="crop-avatar avatar-red">
+          <span class="material-icons-round">local_florist</span>
+        </div>
+        <div class="crop-info">
+          <div class="crop-name">Tomates del balcón</div>
+          <div class="crop-type">Tomate cherry</div>
+          <div class="sensor-chips">
+            <span class="s-chip s-ok">
+              <span class="material-icons-round">thermostat</span> 24°
+            </span>
+            <span class="s-chip s-ok">
+              <span class="material-icons-round">water_drop</span> 72%
+            </span>
+            <span class="s-chip s-ok">
+              <span class="material-icons-round">wb_sunny</span> ok
+            </span>
+          </div>
+          <div class="crop-footer">
+            <span><span class="material-icons-round">place</span> Terraza</span>
+            <span><span class="material-icons-round">schedule</span> Hace 3 min</span>
+          </div>
+        </div>
+        <div class="chevron"><span class="material-icons-round">chevron_right</span></div>
+      </div>
+    </div>
+
+    <!-- Cultivo 2: Precaución -->
+    <div class="crop-card">
+      <div class="accent accent-orange"></div>
+      <div class="card-inner">
+        <div class="crop-avatar avatar-yellow">
+          <span class="material-icons-round">filter_vintage</span>
+        </div>
+        <div class="crop-info">
+          <div class="crop-name">Cempasúchil terraza</div>
+          <div class="crop-type">Cempasúchil</div>
+          <div class="sensor-chips">
+            <span class="s-chip s-ok">
+              <span class="material-icons-round">thermostat</span> 19°
+            </span>
+            <span class="s-chip s-warn">
+              <span class="material-icons-round">water_drop</span> 45%
+            </span>
+            <span class="s-chip s-ok">
+              <span class="material-icons-round">wb_sunny</span> ok
+            </span>
+          </div>
+          <div class="crop-footer">
+            <span><span class="material-icons-round">place</span> Interior</span>
+            <span><span class="material-icons-round">schedule</span> Hace 12 min</span>
+          </div>
+        </div>
+        <div class="chevron"><span class="material-icons-round">chevron_right</span></div>
+      </div>
+    </div>
+
+    <!-- Cultivo 3: Sin dispositivo -->
+    <div class="crop-card">
+      <div class="accent accent-green"></div>
+      <div class="card-inner">
+        <div class="crop-avatar avatar-teal">
+          <span class="material-icons-round">spa</span>
+        </div>
+        <div class="crop-info">
+          <div class="crop-name">Albahaca cocina</div>
+          <div class="crop-type">Albahaca</div>
+          <div class="sensor-chips">
+            <span class="s-chip s-none">
+              <span class="material-icons-round">sensors_off</span> Sin dispositivo
+            </span>
+          </div>
+          <div class="crop-footer">
+            <span><span class="material-icons-round">place</span> Cocina</span>
+            <span><span class="material-icons-round">schedule</span> Sin datos</span>
+          </div>
+        </div>
+        <div class="chevron"><span class="material-icons-round">chevron_right</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAB -->
+  <div class="fab-area">
+    <div class="fab">
+      <span class="material-icons-round">add</span>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="tab-bar">
+    <div class="tab-item active">
+      <span class="material-icons-round">yard</span>
+      <span>Jardín</span>
+    </div>
+    <div class="tab-item">
+      <span class="material-icons-round">notifications</span>
+      <span>Alertas</span>
+    </div>
+    <div class="tab-item">
+      <span class="material-icons-round">settings</span>
+      <span>Ajustes</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

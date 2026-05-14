@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boceto — Dashboard de sensores</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #e8f0e8;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 16px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  .material-icons-round { font-size: inherit; vertical-align: middle; }
+
+  /* ── Teléfono ── */
+  .phone {
+    width: 375px;
+    background: #f5f5f5;
+    border-radius: 44px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 0 0 10px #1a1a1a;
+    overflow: hidden;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    background: #2E7D32;
+    padding: 10px 24px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255,255,255,.9);
+    font-weight: 600;
+  }
+  .status-right { display: flex; align-items: center; gap: 6px; }
+  .status-right .material-icons-round { font-size: 14px; }
+
+  /* ── Banner de salud ── */
+  .health-banner {
+    background: linear-gradient(135deg, #2E7D32 0%, #66BB6A 100%);
+    padding: 20px 20px 28px;
+  }
+  .banner-label {
+    display: flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,.8);
+    font-size: 12px; font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .banner-label .material-icons-round { font-size: 15px; }
+  .health-banner h2 {
+    color: #fff; font-size: 18px; font-weight: 700;
+    margin-bottom: 16px; line-height: 1.3;
+  }
+  .progress-track {
+    background: rgba(255,255,255,.25);
+    border-radius: 8px; height: 7px; overflow: hidden;
+  }
+  .progress-fill {
+    background: #fff; height: 100%; border-radius: 8px; width: 92%;
+  }
+  .progress-label {
+    text-align: right; color: rgba(255,255,255,.85);
+    font-size: 11px; font-weight: 600; margin-top: 5px;
+  }
+
+  /* ── Área de tarjetas ── */
+  .cards-area { padding: 18px 16px 24px; }
+
+  /* Tarjeta grande */
+  .card-featured {
+    background: rgba(229,57,53,.06);
+    border-radius: 20px;
+    padding: 18px;
+    display: flex; align-items: center; gap: 18px;
+    margin-bottom: 14px;
+  }
+  .arc-wrap {
+    position: relative; width: 80px; height: 80px; flex-shrink: 0;
+  }
+  .arc-wrap svg { position: absolute; top: 0; left: 0; }
+  .arc-icon {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #E53935;
+  }
+  .arc-icon .material-icons-round { font-size: 28px; }
+  .card-featured .meta { flex: 1; }
+  .sensor-name { color: #757575; font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+  .value-main {
+    display: flex; align-items: baseline; gap: 3px; margin-bottom: 8px;
+  }
+  .sensor-value-lg { font-size: 36px; font-weight: 800; color: #E53935; line-height: 1; }
+  .sensor-unit-lg  { font-size: 16px; font-weight: 500; color: #9e9e9e; }
+  .range-hint { font-size: 11px; color: #9e9e9e; margin-top: 4px; }
+
+  /* Pill estado */
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+  }
+  .pill .material-icons-round { font-size: 12px; }
+  .pill-green  { background: rgba(76,175,80,.15);  color: #2E7D32; }
+  .pill-orange { background: rgba(255,152,0,.15);  color: #E65100; }
+  .pill-red    { background: rgba(244,67,54,.15);  color: #B71C1C; }
+
+  /* Tarjetas compactas */
+  .cards-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-bottom: 14px;
+  }
+  .card-compact { border-radius: 20px; padding: 16px; }
+  .icon-box {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .icon-box .material-icons-round { font-size: 22px; }
+  .compact-value {
+    display: flex; align-items: baseline; gap: 3px;
+  }
+  .sensor-value-md { font-size: 28px; font-weight: 800; line-height: 1; }
+  .sensor-unit-sm  { font-size: 12px; color: #9e9e9e; }
+
+  .card-humidity { background: rgba(21,101,192,.06); }
+  .card-humidity .icon-box { background: rgba(21,101,192,.13); color: #1565C0; }
+  .card-humidity .sensor-value-md { color: #1565C0; }
+
+  .card-light { background: rgba(245,127,23,.06); }
+  .card-light .icon-box { background: rgba(245,127,23,.13); color: #F57F17; }
+  .card-light .sensor-value-md { color: #F57F17; }
+
+  /* Timestamp */
+  .timestamp {
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-size: 11px; color: #bdbdbd; margin-bottom: 20px;
+  }
+  .timestamp .material-icons-round { font-size: 14px; }
+
+  /* Perfil del cultivo */
+  .profile-card {
+    background: #fff; border-radius: 20px;
+    border: 1px solid #e8e8e8; padding: 16px;
+  }
+  .profile-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+  }
+  .profile-icon-box {
+    width: 38px; height: 38px;
+    background: rgba(76,175,80,.12);
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    color: #388E3C;
+  }
+  .profile-icon-box .material-icons-round { font-size: 20px; }
+  .profile-title { font-size: 15px; font-weight: 700; color: #212121; }
+  .profile-desc  { font-size: 12px; color: #9e9e9e; margin-top: 1px; }
+  hr { border: none; border-top: 1px solid #f0f0f0; margin: 12px 0; }
+  .threshold-row {
+    display: flex; align-items: center; gap: 10px; padding: 5px 0;
+  }
+  .t-icon { width: 22px; display: flex; align-items: center; justify-content: center; }
+  .t-icon .material-icons-round { font-size: 18px; }
+  .t-label { flex: 1; font-size: 13px; color: #757575; }
+  .t-value { font-size: 13px; font-weight: 600; color: #212121; }
+
+  /* Tab bar */
+  .tab-bar {
+    background: #fff; border-top: 1px solid #eee;
+    display: flex; padding: 8px 0 20px;
+  }
+  .tab-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 500; color: #9e9e9e;
+  }
+  .tab-item.active { color: #4CAF50; }
+  .tab-item .material-icons-round { font-size: 24px; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-right">
+      <span class="material-icons-round">signal_cellular_alt</span>
+      <span class="material-icons-round">wifi</span>
+      <span class="material-icons-round">battery_full</span>
+    </div>
+  </div>
+
+  <!-- Banner de salud -->
+  <div class="health-banner">
+    <div class="banner-label">
+      <span class="material-icons-round">eco</span>
+      Estado del cultivo
+    </div>
+    <h2>Todo en condiciones óptimas</h2>
+    <div class="progress-track"><div class="progress-fill"></div></div>
+    <div class="progress-label">92% saludable</div>
+  </div>
+
+  <!-- Tarjetas -->
+  <div class="cards-area">
+
+    <!-- Tarjeta grande: Temperatura -->
+    <div class="card-featured">
+      <div class="arc-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <path d="M14,58 A30,30 0 1,1 66,58" fill="none"
+            stroke="rgba(229,57,53,.15)" stroke-width="5" stroke-linecap="round"/>
+          <path d="M14,58 A30,30 0 0,1 40,10" fill="none"
+            stroke="#E53935" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+        <div class="arc-icon">
+          <span class="material-icons-round">thermostat</span>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="sensor-name">Temperatura</div>
+        <div class="value-main">
+          <span class="sensor-value-lg">24.5</span>
+          <span class="sensor-unit-lg">°C</span>
+        </div>
+        <span class="pill pill-green">
+          <span class="material-icons-round">check_circle</span> Óptimo
+        </span>
+        <div class="range-hint">Rango: 18–28 °C</div>
+      </div>
+    </div>
+
+    <!-- Fila: Humedad + Luz -->
+    <div class="cards-row">
+      <div class="card-compact card-humidity">
+        <div class="icon-box">
+          <span class="material-icons-round">water_drop</span>
+        </div>
+        <div class="sensor-name">Humedad suelo</div>
+        <div class="compact-value">
+          <span class="sensor-value-md">72</span>
+          <span class="sensor-unit-sm">%</span>
+        </div>
+        <span class="pill pill-green" style="margin-top:10px">
+          <span class="material-icons-round">check_circle</span> Óptimo
+        </span>
+      </div>
+
+      <div class="card-compact card-light">
+        <div class="icon-box">
+          <span class="material-icons-round">wb_sunny</span>
+        </div>
+        <div class="sensor-name">Luz</div>
+        <div class="compact-value">
+          <span class="sensor-value-md">8.4k</span>
+          <span class="sensor-unit-sm">lux</span>
+        </div>
+        <span class="pill pill-orange" style="margin-top:10px">
+          <span class="material-icons-round">warning</span> Precaución
+        </span>
+      </div>
+    </div>
+
+    <!-- Timestamp -->
+    <div class="timestamp">
+      <span class="material-icons-round">sync</span>
+      Actualizado 14:32:05
+    </div>
+
+    <!-- Perfil del cultivo -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-icon-box">
+          <span class="material-icons-round">yard</span>
+        </div>
+        <div>
+          <div class="profile-title">Tomate cherry</div>
+          <div class="profile-desc">Variedad compacta · ciclo 75 días</div>
+        </div>
+      </div>
+      <hr>
+      <div class="threshold-row">
+        <div class="t-icon" style="color:#E53935">
+          <span class="material-icons-round">thermostat</span>
+        </div>
+        <span class="t-label">Temperatura</span>
+        <span class="t-value">18–28 °C</span>
+      </div>
+      <div class="threshold-row">
+        <div class="t-icon" style="color:#1565C0">
+          <span class="material-icons-round">water_drop</span>
+        </div>
+        <span class="t-label">Humedad suelo</span>
+        <span class="t-value">60–80 %</span>
+      </div>
+      <div class="threshold-row">
+        <div class="t-icon" style="color:#F57F17">
+          <span class="material-icons-round">wb_sunny</span>
+        </div>
+        <span class="t-label">Horas de luz</span>
+        <span class="t-value">8 h/día</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <div class="tab-item active">
+      <span class="material-icons-round">bar_chart</span>
+      <span>Monitor</span>
+    </div>
+    <div class="tab-item">
+      <span class="material-icons-round">tune</span>
+      <span>Control</span>
+    </div>
+    <div class="tab-item">
+      <span class="material-icons-round">show_chart</span>
+      <span>Historial</span>
+    </div>
+    <div class="tab-item">
+      <span class="material-icons-round">smart_toy</span>
+      <span>IA</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

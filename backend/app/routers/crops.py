@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 from uuid import UUID
-from app.models.crop import CropCreate, CropResponse
+from app.models.crop import CropCreate, CropResponse, CropUpdate
 from app.core.security import get_current_user
 from app.services import crops_service
 
@@ -40,6 +40,26 @@ async def get_crop(crop_id: UUID, user: dict = Depends(get_current_user)):
     if not crop:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Crop not found")
     return crop
+
+@router.patch(
+    "/{crop_id}",
+    response_model=CropResponse,
+    summary="Actualizar un cultivo",
+    description="Actualiza nombre, ubicación o perfil de un cultivo del usuario autenticado.",
+)
+async def update_crop(
+    crop_id: UUID,
+    data: CropUpdate,
+    user: dict = Depends(get_current_user),
+):
+    updated = await crops_service.update_crop(crop_id, data, user)
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Cultivo no encontrado",
+        )
+    return updated
+
 
 @router.delete(
     "/{crop_id}",

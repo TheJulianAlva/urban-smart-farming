@@ -14,6 +14,14 @@ class CropCreate(BaseModel):
     planting_date: Optional[date] = Field(None, description="Fecha de siembra")
 
 
+class CropUpdate(BaseModel):
+    """Modelo de entrada para actualizar un Cultivo. Todos los campos son opcionales."""
+    custom_name: Optional[str] = Field(None, description="Nuevo nombre personalizado")
+    location: Optional[str] = Field(None, description="Nueva ubicación textual")
+    profile_id: Optional[UUID] = Field(None, description="Nuevo UUID del perfil de cultivo")
+    health_status: Optional[str] = Field(None, description="Estado: healthy, warning, critical")
+
+
 class CropResponse(BaseModel):
     """Modelo de salida que se devuelve al frontend al crear o consultar un Cultivo."""
     id: UUID = Field(..., description="Identificador único del cultivo")

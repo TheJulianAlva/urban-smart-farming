@@ -6,9 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:urban_smart_farming/core/config/app_config.dart';
 import 'package:urban_smart_farming/core/utils/failures.dart';
 import 'package:urban_smart_farming/features/crops/data/models/crop_model.dart';
-import 'package:urban_smart_farming/features/crops/data/models/mock_pot_factory.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_entity.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/domain/entities/pot.dart';
 import 'package:urban_smart_farming/features/crops/domain/repositories/crop_repository.dart';
 
 /// Implementación del repositorio de cultivos
@@ -23,18 +23,18 @@ class CropRepositoryImpl implements CropRepository {
 
       final response = await client
           .from('Crop')
-          .select('*, CropProfile(*)')
+          .select('*, CropProfile(*), Device(*)')
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
       final crops = (response as List<dynamic>).map((row) {
-        final entity = CropModel.fromJson(row as Map<String, dynamic>);
-        return entity.copyWith(
-          pot: MockPotFactory.createMockPot(
-            id: 'pot-${entity.id}',
-            cropId: entity.id,
-          ),
-        );
+        final rowMap = row as Map<String, dynamic>;
+        final entity = CropModel.fromJson(rowMap);
+        final deviceList = rowMap['Device'] as List<dynamic>?;
+        final deviceJson = (deviceList != null && deviceList.isNotEmpty)
+            ? deviceList.first as Map<String, dynamic>
+            : null;
+        return entity.copyWith(pot: _potFromDevice(deviceJson));
       }).toList();
 
       return Right(crops);
@@ -54,18 +54,18 @@ class CropRepositoryImpl implements CropRepository {
 
       final response = await client
           .from('Crop')
-          .select('*, CropProfile(*)')
+          .select('*, CropProfile(*), Device(*)')
           .eq('id', cropId)
           .eq('user_id', userId)
           .single();
 
-      final entity = CropModel.fromJson(response as Map<String, dynamic>);
-      return Right(entity.copyWith(
-        pot: MockPotFactory.createMockPot(
-          id: 'pot-${entity.id}',
-          cropId: entity.id,
-        ),
-      ));
+      final rowMap = response as Map<String, dynamic>;
+      final entity = CropModel.fromJson(rowMap);
+      final deviceList = rowMap['Device'] as List<dynamic>?;
+      final deviceJson = (deviceList != null && deviceList.isNotEmpty)
+          ? deviceList.first as Map<String, dynamic>
+          : null;
+      return Right(entity.copyWith(pot: _potFromDevice(deviceJson)));
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST116') {
         return Left(ServerFailure('Cultivo con ID $cropId no encontrado'));
@@ -146,10 +146,60 @@ class CropRepositoryImpl implements CropRepository {
     );
   }
 
+  /// Construye un [Pot] desde los datos reales de la tabla Device.
+  /// Devuelve null si el cultivo no tiene dispositivo registrado.
+  /// sensors y actuators se dejan vacíos: Dashboard y Control los obtienen
+  /// con sus propios BLoCs.
+  Pot? _potFromDevice(Map<String, dynamic>? device) {
+    if (device == null) return null;
+
+    final lastHeartbeat = device['last_heartbeat'] != null
+        ? DateTime.tryParse(device['last_heartbeat'] as String)
+        : null;
+
+    // Conectado si el último heartbeat fue hace menos de 5 minutos
+    final isConnected = lastHeartbeat != null &&
+        DateTime.now().difference(lastHeartbeat).inMinutes < 5;
+
+    return Pot(
+      id: device['id'] as String,
+      hardwareId: (device['mac_address'] as String?) ?? '',
+      installedAt: lastHeartbeat ?? DateTime.now(),
+      isConnected: isConnected,
+      lastSync: lastHeartbeat,
+      sensors: [],    // datos de sensores los obtiene DashboardBloc
+      actuators: [],  // estados de actuadores los obtiene ControlBloc
+    );
+  }
+
   @override
   Future<Either<Failure, CropEntity>> updateCrop(CropEntity crop) async {
-    // No implementado en el backend aún — devuelve la entidad sin cambios
-    return Right(crop);
+    try {
+      final session = Supabase.instance.client.auth.currentSession;
+      if (session == null) return const Left(AuthFailure());
+
+      final uri = Uri.parse(
+        '${AppConfig.backendBaseUrl}/api/v1/crops/${crop.id}',
+      );
+      final response = await http.patch(
+        uri,
+        headers: {
+          'Authorization': 'Bearer ${session.accessToken}',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'custom_name': crop.name,
+          'location': crop.location,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) return Right(crop);
+      return const Left(ServerFailure('Error al actualizar cultivo'));
+    } on TimeoutException {
+      return const Left(ServerFailure('Tiempo de espera agotado'));
+    } catch (_) {
+      return const Left(ServerFailure('Error de conexión al actualizar cultivo'));
+    }
   }
 
   @override

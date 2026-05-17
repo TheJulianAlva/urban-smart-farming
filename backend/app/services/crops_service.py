@@ -2,7 +2,7 @@ from uuid import UUID
 from typing import Optional
 
 from app.core.supabase import supabase_client
-from app.models.crop import CropCreate
+from app.models.crop import CropCreate, CropUpdate
 
 # Nota: Los comentarios y docstrings van en Español
 
@@ -45,6 +45,24 @@ async def get_crop(crop_id: UUID, user: dict) -> Optional[dict]:
         .execute()
     )
     return response.data
+
+
+async def update_crop(crop_id: UUID, data: CropUpdate, user: dict) -> Optional[dict]:
+    """Actualiza los campos indicados de un cultivo del usuario autenticado."""
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        # Nada que actualizar: devolver el cultivo sin cambios
+        return await get_crop(crop_id, user)
+    if "profile_id" in update_data:
+        update_data["profile_id"] = str(update_data["profile_id"])
+    response = (
+        supabase_client.table("Crop")
+        .update(update_data)
+        .eq("id", str(crop_id))
+        .eq("user_id", user["sub"])
+        .execute()
+    )
+    return response.data[0] if response.data else None
 
 
 async def delete_crop(crop_id: UUID, user: dict) -> None:

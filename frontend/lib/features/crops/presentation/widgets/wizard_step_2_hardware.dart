@@ -197,7 +197,9 @@ class _WizardStep2HardwareState extends State<WizardStep2Hardware> {
           title: const Text('Sí, quiero vincular ahora'),
           subtitle: const Text('Buscar y conectar mi maceta inteligente'),
           value: true,
+          // ignore: deprecated_member_use
           groupValue: _wantsToLink,
+          // ignore: deprecated_member_use
           onChanged: (value) {
             setState(() {
               _wantsToLink = value!;
@@ -211,7 +213,9 @@ class _WizardStep2HardwareState extends State<WizardStep2Hardware> {
           title: const Text('No, vincular después'),
           subtitle: const Text('Continuar sin hardware (modo mockup)'),
           value: false,
+          // ignore: deprecated_member_use
           groupValue: _wantsToLink,
+          // ignore: deprecated_member_use
           onChanged: (value) {
             setState(() {
               _wantsToLink = value!;

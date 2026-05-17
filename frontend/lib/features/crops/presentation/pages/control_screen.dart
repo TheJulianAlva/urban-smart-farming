@@ -303,7 +303,7 @@ class ControlScreen extends StatelessWidget {
 class ActuatorControlCard extends StatefulWidget {
   final Actuator actuator;
   final Sensor? relatedSensor;
-  final profile;
+  final dynamic profile;
 
   const ActuatorControlCard({
     super.key,
@@ -358,7 +358,7 @@ class _ActuatorControlCardState extends State<ActuatorControlCard> {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Estado: ${_isOn ? "Encendido" : "Apagado"}${widget.actuator.hasIntensityControl ? " (${_intensity}%)" : ""}',
+                        'Estado: ${_isOn ? "Encendido" : "Apagado"}${widget.actuator.hasIntensityControl ? " ($_intensity%)" : ""}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),

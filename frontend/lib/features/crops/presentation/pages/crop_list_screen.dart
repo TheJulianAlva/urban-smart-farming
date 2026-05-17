@@ -64,7 +64,18 @@ class CropListScreen extends StatelessWidget {
           ),
           automaticallyImplyLeading: false,
         ),
-        body: BlocBuilder<CropsBloc, CropsState>(
+        body: BlocConsumer<CropsBloc, CropsState>(
+          listener: (context, state) {
+            if (state is CropsCreatedWithDeviceError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.orange,
+                  duration: const Duration(seconds: 5),
+                ),
+              );
+            }
+          },
           builder: (context, state) {
             if (state is CropsLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -371,7 +382,7 @@ class _CropCard extends StatelessWidget {
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        color: dotColor.withOpacity(0.2),
+        color: dotColor.withValues(alpha: 0.2),
         shape: BoxShape.circle,
         border: Border.all(color: dotColor, width: 2),
       ),

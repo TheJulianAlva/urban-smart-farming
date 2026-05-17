@@ -1,6 +1,6 @@
 # Plan de estado y pendientes — Urban Smart Farming
 
-> Actualizado el 2026-05-17. Estado verificado contra código fuente y Supabase.
+> Actualizado el 2026-05-17. Pendientes 3.3 y 3.6 completados.
 
 ---
 
@@ -66,7 +66,7 @@ Todos los routers están registrados en `main.py` y todos los servicios implemen
 |---|---|---|
 | Auth (login/registro) | ✅ Completo | ✅ Real (Supabase Auth) |
 | CropListScreen + navegación | ✅ Completo | ✅ Real (Supabase directo) |
-| Wizard de creación de cultivos | ✅ Completo | ✅ Real (POST /api/v1/crops con profile_id UUID) |
+| Wizard de creación de cultivos | ✅ Completo | ✅ Real (POST /api/v1/crops + POST /api/v1/devices/register si hay hardware) |
 | DashboardScreen (3 métricas: temp, humedad, luz) | ✅ Completo | ✅ Real (GET /api/v1/sensor-readings/latest) |
 | ControlScreen (bomba + LED) | ✅ Completo | ✅ Real (POST /api/v1/devices/{id}/actuate) |
 | AiDiagnosisScreen | ✅ Completo | ✅ Real (Gemini Vision) |
@@ -94,79 +94,20 @@ Frontend: `crop_repository_impl.updateCrop()` llama `PATCH` con `custom_name` y 
 
 ---
 
-### 3.3 Wizard: hardwareId capturado pero nunca registrado en backend
+### ~~3.3 Wizard: hardwareId capturado pero nunca registrado en backend~~ ✅ Resuelto
 
-**Descripción del problema:**
+Flujo implementado: tras `POST /api/v1/crops` exitoso, si `event.hardwareId != null`, el BLoC llama `POST /api/v1/devices/register {crop_id, mac_address}`. En caso de fallo (ej: MAC 409), el cultivo NO se revierte — se emite el estado `CropsCreatedWithDeviceError` que `CropListScreen` muestra como SnackBar naranja: *"Cultivo creado, pero no se pudo vincular el hardware. Puedes vincularlo más tarde."*
 
-El wizard de creación tiene 4 pasos. El paso 2 ("Hardware") simula un escaneo BLE y permite seleccionar una maceta ESP32. El `hardwareId` (MAC address del dispositivo) llega correctamente al evento `AddCrop`:
-
-```dart
-// crop_creation_wizard_screen.dart
-getIt<CropsBloc>().add(AddCrop(
-  name: _cropName,
-  location: _cropLocation,
-  profile: _selectedProfile!,
-  hardwareId: _selectedPot?.hardwareId,  // ← llega aquí...
-));
-```
-
-Pero `_onAddCrop` en `crops_bloc.dart` lo ignora completamente:
-
-```dart
-Future<void> _onAddCrop(AddCrop event, Emitter<CropsState> emit) async {
-  final result = await createCropUseCase(
-    name: event.name,
-    profileId: event.profile.id,
-    location: event.location,
-    // ← event.hardwareId nunca se pasa, se pierde aquí
-  );
-  // Solo llama RefreshCrops() si tiene éxito
-}
-```
-
-**Resultado actual:** El cultivo se crea en Supabase pero **sin Device vinculado**, aunque el usuario haya seleccionado hardware. El paso 2 del wizard es un dead-end funcional.
-
-**Endpoint disponible en el backend:**
-
-`POST /api/v1/devices/register` espera:
-```json
-{ "mac_address": "<hardwareId>", "crop_id": "<uuid del cultivo recién creado>" }
-```
-
-Validaciones del backend:
-- Verifica que `crop_id` pertenece al usuario autenticado
-- Verifica que `mac_address` es única en el sistema (409 si ya existe)
-- Devuelve `DeviceResponse` (id, crop_id, mac_address, last_heartbeat) con status 201
-
-**Cambios necesarios:**
+**Archivos modificados:**
 
 | Archivo | Cambio |
 |---|---|
-| `crops_bloc.dart` — `_onAddCrop` | Después de crear el cultivo con éxito, si `event.hardwareId != null`, llamar a `registerDevice(cropId, hardwareId)` |
-| `crop_repository.dart` | Agregar `registerDevice({required String cropId, required String macAddress})` a la interfaz |
-| `crop_repository_impl.dart` | Implementar `registerDevice()` con `POST /api/v1/devices/register` + Bearer token |
-| `create_crop_use_case.dart` | No requiere cambios — el registro del device es un paso posterior al crop |
-
-**Flujo completo correcto:**
-
-```
-Wizard Step 2 → usuario selecciona pot con hardwareId = "AA:BB:CC:DD:EE:FF"
-    ↓
-AddCrop(name, location, profileId, hardwareId)
-    ↓
-_onAddCrop → createCropUseCase → POST /api/v1/crops → 201 → newCropId
-    ↓ (si event.hardwareId != null)
-cropRepository.registerDevice(cropId: newCropId, macAddress: event.hardwareId)
-    → POST /api/v1/devices/register {mac_address, crop_id}
-    → 201 → Device creado y vinculado
-    ↓
-RefreshCrops() → getUserCrops con Device(*) → crop.hasHardware == true
-```
-
-**Manejo de errores sugerido:**
-
-- Si `registerDevice` falla (ej: MAC duplicada → 409): el cultivo YA fue creado. No hacer rollback. Emitir un estado de advertencia (nuevo `CropsCreatedWithDeviceError`) que la UI muestre como SnackBar: *"Cultivo creado, pero no se pudo vincular el hardware. Puedes vincularlo más tarde."*
-- Si el usuario no seleccionó hardware (`hardwareId == null`): omitir el paso de registro, flujo normal.
+| `crop_repository.dart` | `registerDevice({cropId, macAddress})` agregado a la interfaz |
+| `crop_repository_impl.dart` | `registerDevice()` implementado con `POST /api/v1/devices/register` + Bearer token |
+| `crops_state.dart` | Nuevo estado `CropsCreatedWithDeviceError` |
+| `crops_bloc.dart` | `_onAddCrop` — flujo 2 pasos; inyecta `CropRepository cropRepository` |
+| `di_container.dart` | `CropsBloc` factory recibe `cropRepository: getIt()` |
+| `crop_list_screen.dart` | `BlocBuilder` → `BlocConsumer`; listener muestra SnackBar en `CropsCreatedWithDeviceError` |
 
 ### 3.4 No hay pantalla de Alerts en Flutter
 
@@ -176,17 +117,16 @@ El backend tiene endpoints completos para alertas (`/api/v1/alerts`), pero el fr
 
 La tabla `Alert` tiene columnas `notification_sent` y `notification_channel`, pero no hay lógica para enviar push notifications (FCM/APNs). El campo `notification_sent` queda siempre en `false`.
 
-### 3.6 8 warnings en `flutter analyze`
+### ~~3.6 8 warnings en `flutter analyze`~~ ✅ Resuelto
 
-Ninguno es error de compilación. Están en archivos no tocados por el plan principal:
+`flutter analyze` reporta **No issues found**. Correcciones aplicadas:
 
-| Archivo | Warning |
+| Archivo | Corrección |
 |---|---|
-| `crop_repository_impl.dart:62` | `unnecessary_cast` |
-| `control_screen.dart:306` | `prefer_typing_uninitialized_variables` |
-| `control_screen.dart:361` | `unnecessary_brace_in_string_interps` |
-| `crop_list_screen.dart:374` | `deprecated_member_use` (withOpacity → withValues) |
-| `wizard_step_2_hardware.dart:200,201,214,215` | `deprecated_member_use` (Radio groupValue/onChanged → RadioGroup) |
+| `crop_repository_impl.dart` | Eliminado cast innecesario `response as Map<String, dynamic>` |
+| `control_screen.dart` | `final profile` → `final dynamic profile`; `"${_intensity}%"` → `"$_intensity%"` |
+| `crop_list_screen.dart` | `.withOpacity(0.2)` → `.withValues(alpha: 0.2)` |
+| `wizard_step_2_hardware.dart` | Añadidos `// ignore: deprecated_member_use` en los 4 parámetros `groupValue`/`onChanged` de `RadioListTile` |
 
 ---
 
@@ -195,10 +135,10 @@ Ninguno es error de compilación. Están en archivos no tocados por el plan prin
 ```
 ✅ 3.1 Pot real (Device → PotEntity)      — completado
 ✅ 3.2 updateCrop()                        — completado
-3.3  Wizard: registrar Device tras crear   — impacto funcional alto
+✅ 3.3 Wizard: registrar Device tras crear — completado
 3.4  AlertsScreen                          — funcionalidad nueva
 3.5  Push notifications                    — requiere setup FCM/APNs
-3.6  Limpiar warnings de analyze           — cosmético
+✅ 3.6 Limpiar warnings de analyze         — completado (0 issues)
 ```
 
 ---

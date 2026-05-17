@@ -100,6 +100,7 @@ Future<void> setupDependencies() async {
       getUserCropsUseCase: getIt(),
       createCropUseCase: getIt(),
       deleteCropUseCase: getIt(),
+      cropRepository: getIt(),
     ),
   );
 

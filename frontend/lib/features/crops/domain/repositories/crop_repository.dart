@@ -24,6 +24,12 @@ abstract class CropRepository {
   /// Eliminar cultivo
   Future<Either<Failure, void>> deleteCrop(String cropId);
 
+  /// Registrar un dispositivo vinculado a un cultivo recién creado
+  Future<Either<Failure, void>> registerDevice({
+    required String cropId,
+    required String macAddress,
+  });
+
   /// Obtener perfiles de cultivo personalizados del usuario actual
   Future<Either<Failure, List<PlantProfile>>> getUserProfiles();
 }

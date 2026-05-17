@@ -59,7 +59,7 @@ class CropRepositoryImpl implements CropRepository {
           .eq('user_id', userId)
           .single();
 
-      final rowMap = response as Map<String, dynamic>;
+      final rowMap = response;
       final entity = CropModel.fromJson(rowMap);
       final deviceList = rowMap['Device'] as List<dynamic>?;
       final deviceJson = (deviceList != null && deviceList.isNotEmpty)
@@ -222,6 +222,44 @@ class CropRepositoryImpl implements CropRepository {
       return const Left(ServerFailure('Tiempo de espera agotado'));
     } catch (_) {
       return const Left(ServerFailure('Error de conexión al eliminar cultivo'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> registerDevice({
+    required String cropId,
+    required String macAddress,
+  }) async {
+    try {
+      final session = Supabase.instance.client.auth.currentSession;
+      if (session == null) return const Left(AuthFailure());
+
+      final uri = Uri.parse(
+        '${AppConfig.backendBaseUrl}/api/v1/devices/register',
+      );
+      final response = await http.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer ${session.accessToken}',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'crop_id': cropId,
+          'mac_address': macAddress,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 201) return const Right(null);
+      if (response.statusCode == 409) {
+        return const Left(ServerFailure('MAC ya registrada'));
+      }
+      return const Left(ServerFailure('Error al registrar dispositivo'));
+    } on TimeoutException {
+      return const Left(ServerFailure('Tiempo de espera agotado'));
+    } catch (_) {
+      return const Left(
+        ServerFailure('Error de conexión al registrar dispositivo'),
+      );
     }
   }
 

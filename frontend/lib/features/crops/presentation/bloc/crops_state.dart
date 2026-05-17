@@ -30,3 +30,14 @@ class CropsError extends CropsState {
   @override
   List<Object?> get props => [message];
 }
+
+/// El cultivo se creó con éxito pero el registro del hardware falló.
+/// No se hace rollback — el cultivo existe. La UI muestra un aviso.
+class CropsCreatedWithDeviceError extends CropsState {
+  final String message;
+
+  const CropsCreatedWithDeviceError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

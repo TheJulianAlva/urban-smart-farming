@@ -45,43 +45,69 @@ def on_message(client, userdata, message):
 
 def process_alerts_and_actions(device_id, moisture, temp, light):
     """Lógica central para disparar alertas y actuadores automáticos"""
-    # Consultar el perfil del cultivo asociado al dispositivo
-    response = supabase_client.table("CropProfile").select("*").eq("device_id", device_id).maybe_single().execute()
-    profile = response.data
-    
+    # --- Lookup en cascada: Device → Crop → CropProfile ---
+    # CropProfile no tiene device_id; hay que navegar la relación completa.
+    device_resp = supabase_client.table("Device").select("crop_id").eq("id", device_id).maybe_single().execute()
+    if not device_resp.data:
+        logger.warning(f"❓ Dispositivo {device_id} no encontrado")
+        return
+    crop_id = device_resp.data["crop_id"]
+
+    crop_resp = supabase_client.table("Crop").select("user_id, profile_id").eq("id", crop_id).maybe_single().execute()
+    if not crop_resp.data:
+        logger.warning(f"❓ Crop {crop_id} no encontrado")
+        return
+    user_id = crop_resp.data["user_id"]
+    profile_id = crop_resp.data["profile_id"]
+
+    profile_resp = supabase_client.table("CropProfile").select("*").eq("id", profile_id).maybe_single().execute()
+    profile = profile_resp.data
     if not profile:
-        logger.warning(f"❓ No se encontró un perfil para el dispositivo {device_id}")
+        logger.warning(f"❓ No se encontró perfil para crop {crop_id}")
         return
 
     # Mapeo de condiciones críticas
     conditions = [
-        (moisture < profile['min_moisture'], "DROUGHT", "pump"),
-        (light < profile['min_light_percentage'], "LOW_LIGHT", "light")
+        (moisture < profile["min_moisture"], "DROUGHT", "pump"),
+        (light < profile["min_light_percentage"], "LOW_LIGHT", "light"),
     ]
 
     for condition_met, alert_type, actuator in conditions:
         if condition_met:
-            # A) Anti-spam: Verificar si ya hay una alerta activa
-            active_alert = supabase_client.table("Alert").select("*").eq("device_id", device_id).eq("alert_type", alert_type).eq("is_resolved", False).execute()
-            
+            # A) Anti-spam: verificar si ya hay una alerta activa
+            active_alert = (
+                supabase_client.table("Alert")
+                .select("id")
+                .eq("device_id", device_id)
+                .eq("alert_type", alert_type)
+                .eq("is_resolved", False)
+                .execute()
+            )
             if not active_alert.data:
-                # B) Insertar Alerta
+                # B) Insertar Alerta (user_id requerido por el esquema)
                 supabase_client.table("Alert").insert({
+                    "user_id": user_id,
                     "device_id": device_id,
                     "alert_type": alert_type,
                     "message": f"Nivel crítico detectado: {alert_type}",
-                    "is_resolved": False
+                    "is_resolved": False,
                 }).execute()
 
                 # C) Publicar comando MQTT para el actuador
-                command_payload = json.dumps({"actuator": actuator, "action": "on", "duration_seconds": 300})
+                command_payload = json.dumps({
+                    "actuator": actuator,
+                    "action": "on",
+                    "duration_seconds": 300,
+                })
                 mqtt_client.publish(f"usf/commands/{device_id}", command_payload)
-                
-                # D) Registrar evento de actuación
+
+                # D) Registrar evento de actuación (crop_id y action requeridos)
                 supabase_client.table("ActuationEvent").insert({
                     "device_id": device_id,
+                    "crop_id": crop_id,
                     "triggered_by": "automatic",
-                    "actuator_type": actuator
+                    "actuator_type": actuator,
+                    "action": "on",
                 }).execute()
                 logger.info(f"🚀 Comando automático enviado: {actuator} para {device_id}")
 

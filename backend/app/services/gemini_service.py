@@ -84,8 +84,7 @@ async def analyze_plant_image(image_bytes: bytes, mime_type: str = "image/jpeg")
         HTTPException 502: Si Gemini responde con un formato JSON inesperado.
     """
     # --- Mock para desarrollo (evita llamadas reales a Gemini) ---
-    # Cambiar a False para usar Gemini real cuando el quota esté disponible.
-    _USE_MOCK = True
+    _USE_MOCK = False
     if _USE_MOCK:
         return {
             "diagnosis": "Deficiencia de Nitrógeno",

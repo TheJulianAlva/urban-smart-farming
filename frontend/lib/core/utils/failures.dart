@@ -31,3 +31,8 @@ class EmailConfirmationFailure extends Failure {
       [super.message =
           'Registro exitoso. Por favor, revisa tu email y confirma tu cuenta antes de iniciar sesión.']);
 }
+
+/// Falla: el cultivo no tiene un dispositivo registrado
+class NoDeviceFailure extends Failure {
+  const NoDeviceFailure([super.message = 'Este cultivo no tiene un dispositivo registrado']);
+}

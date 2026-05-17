@@ -110,13 +110,6 @@ class DashboardScreen extends StatelessWidget {
                             icon: Icons.wb_sunny,
                             status: sensorData.lightStatus,
                           ),
-                          MetricCard(
-                            title: 'pH',
-                            value: sensorData.ph,
-                            unit: '',
-                            icon: Icons.science,
-                            status: sensorData.phStatus,
-                          ),
                         ],
                       ),
 

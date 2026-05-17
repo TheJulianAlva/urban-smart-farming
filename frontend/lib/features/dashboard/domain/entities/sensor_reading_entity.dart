@@ -5,28 +5,24 @@ enum SensorStatus { optimal, warning, danger, offline }
 
 /// Lectura de sensores
 class SensorReadingEntity extends Equatable {
-  final String cropId; // ID del cultivo asociado
+  final String cropId;
   final double temperature; // °C
-  final double humidity; // %
+  final double humidity; // % (humedad del suelo)
   final double lightLevel; // Lux
-  final double ph; // pH level
   final DateTime timestamp;
   final SensorStatus temperatureStatus;
   final SensorStatus humidityStatus;
   final SensorStatus lightStatus;
-  final SensorStatus phStatus;
 
   const SensorReadingEntity({
     required this.cropId,
     required this.temperature,
     required this.humidity,
     required this.lightLevel,
-    required this.ph,
     required this.timestamp,
     required this.temperatureStatus,
     required this.humidityStatus,
     required this.lightStatus,
-    required this.phStatus,
   });
 
   @override
@@ -35,11 +31,9 @@ class SensorReadingEntity extends Equatable {
     temperature,
     humidity,
     lightLevel,
-    ph,
     timestamp,
     temperatureStatus,
     humidityStatus,
     lightStatus,
-    phStatus,
   ];
 }

@@ -15,6 +15,7 @@ import 'package:urban_smart_farming/features/crops/domain/usecases/create_crop_u
 import 'package:urban_smart_farming/features/crops/domain/usecases/delete_crop_use_case.dart';
 import 'package:urban_smart_farming/features/crops/presentation/bloc/crops_bloc.dart';
 
+import 'package:urban_smart_farming/features/dashboard/data/datasources/dashboard_remote_datasource.dart';
 import 'package:urban_smart_farming/features/dashboard/data/repositories/dashboard_repository_impl.dart';
 import 'package:urban_smart_farming/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:urban_smart_farming/features/dashboard/domain/usecases/get_sensor_data_use_case.dart';
@@ -43,8 +44,11 @@ Future<void> setupDependencies() async {
     () => AuthRepositoryImpl(remoteDataSource: getIt()),
   );
   getIt.registerLazySingleton<CropRepository>(() => CropRepositoryImpl());
+  getIt.registerLazySingleton<DashboardRemoteDataSource>(
+    () => DashboardRemoteDataSourceImpl(client: http.Client()),
+  );
   getIt.registerLazySingleton<DashboardRepository>(
-    () => DashboardRepositoryImpl(),
+    () => DashboardRepositoryImpl(remoteDataSource: getIt()),
   );
 
   // Use Cases - Auth

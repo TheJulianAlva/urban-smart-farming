@@ -1,39 +1,46 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:urban_smart_farming/features/control/domain/repositories/control_repository.dart';
 import 'package:urban_smart_farming/features/control/presentation/bloc/control_event.dart';
 import 'package:urban_smart_farming/features/control/presentation/bloc/control_state.dart';
 
-/// BLoC para control de actuadores de cultivos
 class ControlBloc extends Bloc<ControlEvent, ControlState> {
-  ControlBloc() : super(ControlInitial()) {
+  final String cropId;
+  final ControlRepository controlRepository;
+
+  ControlLoaded? _currentState;
+  String? _deviceId;
+
+  ControlBloc({required this.cropId, required this.controlRepository})
+      : super(ControlInitial()) {
     on<LoadControlData>(_onLoadControlData);
     on<ToggleAutomaticMode>(_onToggleAutomaticMode);
     on<TogglePump>(_onTogglePump);
     on<ToggleLight>(_onToggleLight);
     on<SetLightIntensity>(_onSetLightIntensity);
-    on<ToggleFan>(_onToggleFan);
   }
-
-  // Estado actual (lo mantenemos aquí para simplificar)
-  ControlLoaded? _currentState;
 
   Future<void> _onLoadControlData(
     LoadControlData event,
     Emitter<ControlState> emit,
   ) async {
     emit(ControlLoading());
-
-    // Simular carga de datos (mockup)
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    _currentState = const ControlLoaded(
-      isAutomaticMode: true, // Por defecto en modo automático
-      isPumpOn: false,
-      isLightOn: false,
-      lightIntensity: 0,
-      isFanOn: false,
-    );
-
-    emit(_currentState!);
+    try {
+      _deviceId = await controlRepository.getDeviceId(cropId);
+      if (_deviceId == null) {
+        emit(const ControlError('Este cultivo no tiene un dispositivo registrado'));
+        return;
+      }
+      final states = await controlRepository.getActuatorStates(_deviceId!);
+      _currentState = ControlLoaded(
+        isAutomaticMode: true,
+        isPumpOn: states.isPumpOn,
+        isLightOn: states.isLightOn,
+        lightIntensity: states.isLightOn ? 100 : 0,
+      );
+      emit(_currentState!);
+    } catch (e) {
+      emit(ControlError('Error al cargar el control: $e'));
+    }
   }
 
   Future<void> _onToggleAutomaticMode(
@@ -44,23 +51,18 @@ class ControlBloc extends Bloc<ControlEvent, ControlState> {
 
     emit(
       ControlUpdating(
-        event.isAutomatic
-            ? 'Activando modo automático...'
-            : 'Activando modo manual...',
+        event.isAutomatic ? 'Activando modo automático...' : 'Activando modo manual...',
       ),
     );
 
-    // Simular petición al backend
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     _currentState = _currentState!.copyWith(
       isAutomaticMode: event.isAutomatic,
-      // Si activamos automático, apagamos controles manuales
       isPumpOn: event.isAutomatic ? false : _currentState!.isPumpOn,
       isLightOn: event.isAutomatic ? false : _currentState!.isLightOn,
-      isFanOn: event.isAutomatic ? false : _currentState!.isFanOn,
+      lightIntensity: event.isAutomatic ? 0 : _currentState!.lightIntensity,
     );
-
     emit(_currentState!);
   }
 
@@ -68,38 +70,35 @@ class ControlBloc extends Bloc<ControlEvent, ControlState> {
     TogglePump event,
     Emitter<ControlState> emit,
   ) async {
-    if (_currentState == null || _currentState!.isAutomaticMode) return;
+    if (_currentState == null || _currentState!.isAutomaticMode || _deviceId == null) return;
 
-    emit(
-      ControlUpdating(
-        event.isOn ? 'Activando riego...' : 'Desactivando riego...',
-      ),
-    );
-
-    // Simular petición al hardware
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    _currentState = _currentState!.copyWith(isPumpOn: event.isOn);
-    emit(_currentState!);
+    emit(ControlUpdating(event.isOn ? 'Activando riego...' : 'Desactivando riego...'));
+    try {
+      await controlRepository.actuate(_deviceId!, 'pump', event.isOn ? 'on' : 'off');
+      _currentState = _currentState!.copyWith(isPumpOn: event.isOn);
+      emit(_currentState!);
+    } catch (_) {
+      emit(_currentState!); // Revertir UI al estado previo
+    }
   }
 
   Future<void> _onToggleLight(
     ToggleLight event,
     Emitter<ControlState> emit,
   ) async {
-    if (_currentState == null || _currentState!.isAutomaticMode) return;
+    if (_currentState == null || _currentState!.isAutomaticMode || _deviceId == null) return;
 
-    emit(
-      ControlUpdating(event.isOn ? 'Encendiendo luz...' : 'Apagando luz...'),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    _currentState = _currentState!.copyWith(
-      isLightOn: event.isOn,
-      lightIntensity: event.isOn ? 100 : 0,
-    );
-    emit(_currentState!);
+    emit(ControlUpdating(event.isOn ? 'Encendiendo luz...' : 'Apagando luz...'));
+    try {
+      await controlRepository.actuate(_deviceId!, 'light', event.isOn ? 'on' : 'off');
+      _currentState = _currentState!.copyWith(
+        isLightOn: event.isOn,
+        lightIntensity: event.isOn ? 100 : 0,
+      );
+      emit(_currentState!);
+    } catch (_) {
+      emit(_currentState!); // Revertir UI al estado previo
+    }
   }
 
   Future<void> _onSetLightIntensity(
@@ -112,21 +111,6 @@ class ControlBloc extends Bloc<ControlEvent, ControlState> {
       lightIntensity: event.intensity,
       isLightOn: event.intensity > 0,
     );
-    emit(_currentState!);
-  }
-
-  Future<void> _onToggleFan(ToggleFan event, Emitter<ControlState> emit) async {
-    if (_currentState == null || _currentState!.isAutomaticMode) return;
-
-    emit(
-      ControlUpdating(
-        event.isOn ? 'Activando ventilación...' : 'Desactivando ventilación...',
-      ),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    _currentState = _currentState!.copyWith(isFanOn: event.isOn);
     emit(_currentState!);
   }
 }

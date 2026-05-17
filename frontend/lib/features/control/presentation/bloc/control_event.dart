@@ -10,12 +10,7 @@ abstract class ControlEvent extends Equatable {
 
 /// Cargar estado inicial del control
 class LoadControlData extends ControlEvent {
-  final String cropId;
-
-  const LoadControlData(this.cropId);
-
-  @override
-  List<Object?> get props => [cropId];
+  const LoadControlData();
 }
 
 /// Cambiar entre modo automático y manual
@@ -56,14 +51,4 @@ class SetLightIntensity extends ControlEvent {
 
   @override
   List<Object?> get props => [intensity];
-}
-
-/// Activar/desactivar ventilador
-class ToggleFan extends ControlEvent {
-  final bool isOn;
-
-  const ToggleFan(this.isOn);
-
-  @override
-  List<Object?> get props => [isOn];
 }

@@ -28,6 +28,11 @@ import 'package:urban_smart_farming/features/ai_diagnosis/domain/repositories/ai
 import 'package:urban_smart_farming/features/ai_diagnosis/domain/usecases/analyze_crop_image.dart';
 import 'package:urban_smart_farming/features/ai_diagnosis/presentation/bloc/ai_diagnosis_bloc.dart';
 
+import 'package:urban_smart_farming/features/control/data/datasources/control_remote_datasource.dart';
+import 'package:urban_smart_farming/features/control/data/repositories/control_repository_impl.dart';
+import 'package:urban_smart_farming/features/control/domain/repositories/control_repository.dart';
+import 'package:urban_smart_farming/features/control/presentation/bloc/control_bloc.dart';
+
 import 'package:urban_smart_farming/features/crops/domain/usecases/get_user_profiles_use_case.dart';
 import 'package:urban_smart_farming/features/crops/presentation/bloc/profiles_bloc.dart';
 
@@ -110,5 +115,16 @@ Future<void> setupDependencies() async {
       analyzeCropImage: getIt(),
       cropId: cropId,
     ),
+  );
+
+  // Control
+  getIt.registerLazySingleton<ControlRemoteDataSource>(
+    () => ControlRemoteDataSourceImpl(client: http.Client()),
+  );
+  getIt.registerLazySingleton<ControlRepository>(
+    () => ControlRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerFactoryParam<ControlBloc, String, void>(
+    (cropId, _) => ControlBloc(cropId: cropId, controlRepository: getIt()),
   );
 }

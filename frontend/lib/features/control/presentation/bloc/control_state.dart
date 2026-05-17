@@ -17,14 +17,12 @@ class ControlLoaded extends ControlState {
   final bool isPumpOn;
   final bool isLightOn;
   final int lightIntensity; // 0-100
-  final bool isFanOn;
 
   const ControlLoaded({
     required this.isAutomaticMode,
     required this.isPumpOn,
     required this.isLightOn,
     required this.lightIntensity,
-    required this.isFanOn,
   });
 
   @override
@@ -33,7 +31,6 @@ class ControlLoaded extends ControlState {
     isPumpOn,
     isLightOn,
     lightIntensity,
-    isFanOn,
   ];
 
   ControlLoaded copyWith({
@@ -41,14 +38,12 @@ class ControlLoaded extends ControlState {
     bool? isPumpOn,
     bool? isLightOn,
     int? lightIntensity,
-    bool? isFanOn,
   }) {
     return ControlLoaded(
       isAutomaticMode: isAutomaticMode ?? this.isAutomaticMode,
       isPumpOn: isPumpOn ?? this.isPumpOn,
       isLightOn: isLightOn ?? this.isLightOn,
       lightIntensity: lightIntensity ?? this.lightIntensity,
-      isFanOn: isFanOn ?? this.isFanOn,
     );
   }
 }

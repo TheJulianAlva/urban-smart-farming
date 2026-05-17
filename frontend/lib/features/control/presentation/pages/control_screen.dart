@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:urban_smart_farming/core/di/di_container.dart';
 import 'package:urban_smart_farming/features/control/presentation/bloc/control_bloc.dart';
 import 'package:urban_smart_farming/features/control/presentation/bloc/control_event.dart';
 import 'package:urban_smart_farming/features/control/presentation/bloc/control_state.dart';
@@ -14,7 +15,7 @@ class ControlScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ControlBloc()..add(LoadControlData(cropId)),
+      create: (_) => getIt<ControlBloc>(param1: cropId)..add(const LoadControlData()),
       child: Scaffold(
         body: BlocConsumer<ControlBloc, ControlState>(
           listener: (context, state) {

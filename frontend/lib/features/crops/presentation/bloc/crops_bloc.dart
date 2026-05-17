@@ -53,7 +53,7 @@ class CropsBloc extends Bloc<CropsEvent, CropsState> {
   ) async {
     final result = await createCropUseCase(
       name: event.name,
-      plantType: event.plantType,
+      profileId: event.plantType, // plantType contiene el id del perfil
       location: event.location,
     );
 
@@ -66,11 +66,9 @@ class CropsBloc extends Bloc<CropsEvent, CropsState> {
   }
 
   Future<void> _onAddCrop(AddCrop event, Emitter<CropsState> emit) async {
-    // Por ahora usamos el CreateCropUseCase existente
-    // Se puede extender en el futuro para usar el profile
     final result = await createCropUseCase(
       name: event.name,
-      plantType: event.profile.name, // Usar nombre del perfil como plantType
+      profileId: event.profile.id, // UUID de Supabase CropProfile
       location: event.location,
     );
 

@@ -14,7 +14,7 @@ abstract class CropRepository {
   /// Crear nuevo cultivo
   Future<Either<Failure, CropEntity>> createCrop({
     required String name,
-    required String plantType,
+    required String profileId,
     required String location,
   });
 

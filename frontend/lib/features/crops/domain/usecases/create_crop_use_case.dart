@@ -11,7 +11,7 @@ class CreateCropUseCase {
 
   Future<Either<Failure, CropEntity>> call({
     required String name,
-    required String plantType,
+    required String profileId,
     required String location,
   }) async {
     // Validar que el nombre no esté vacío
@@ -28,7 +28,7 @@ class CreateCropUseCase {
 
     return await repository.createCrop(
       name: name,
-      plantType: plantType,
+      profileId: profileId,
       location: location,
     );
   }

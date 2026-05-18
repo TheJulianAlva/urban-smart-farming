@@ -4,7 +4,6 @@ import 'package:equatable/equatable.dart';
 enum SensorType {
   temperature, // Temperatura ambiental
   soilMoisture, // Humedad del suelo
-  ph, // pH del suelo
   light, // Iluminación (lux)
 }
 
@@ -66,10 +65,8 @@ class Sensor extends Equatable {
         return '°C';
       case SensorType.soilMoisture:
         return '%';
-      case SensorType.ph:
-        return 'pH';
       case SensorType.light:
-        return 'lux';
+        return '%';
     }
   }
 
@@ -80,8 +77,6 @@ class Sensor extends Equatable {
         return 'Temperatura';
       case SensorType.soilMoisture:
         return 'Humedad del Suelo';
-      case SensorType.ph:
-        return 'pH del Suelo';
       case SensorType.light:
         return 'Iluminación';
     }

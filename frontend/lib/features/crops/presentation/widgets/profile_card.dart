@@ -63,13 +63,6 @@ class ProfileCard extends StatelessWidget {
                   ),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                Chip(
-                  label: Text(
-                    '🧪 pH ${profile.minPH.toStringAsFixed(1)}-${profile.maxPH.toStringAsFixed(1)}',
-                    style: const TextStyle(fontSize: 11),
-                  ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
               ],
             ),
           ],

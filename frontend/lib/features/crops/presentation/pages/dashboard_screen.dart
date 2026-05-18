@@ -235,10 +235,6 @@ class DashboardScreen extends StatelessWidget {
           profile: crop.profile,
         ),
         SensorGauge(
-          sensor: crop.getSensor(SensorType.ph),
-          profile: crop.profile,
-        ),
-        SensorGauge(
           sensor: crop.getSensor(SensorType.light),
           profile: crop.profile,
         ),
@@ -315,11 +311,6 @@ class DashboardScreen extends StatelessWidget {
               Icons.thermostat,
               'Temperatura',
               '${profile.minTemperature.toStringAsFixed(0)}-${profile.maxTemperature.toStringAsFixed(0)}°C',
-            ),
-            _buildProfileRow(
-              Icons.science,
-              'pH del Suelo',
-              '${profile.minPH.toStringAsFixed(1)}-${profile.maxPH.toStringAsFixed(1)}',
             ),
             _buildProfileRow(
               Icons.wb_sunny,

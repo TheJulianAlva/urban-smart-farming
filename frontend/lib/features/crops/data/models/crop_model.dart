@@ -76,8 +76,6 @@ class CropModel {
       maxSoilMoisture:    (json['max_moisture']      as num?)?.toDouble() ?? 80.0,
       minTemperature:     (json['ideal_temperature'] as num?)?.toDouble() ?? 15.0,
       maxTemperature:     (json['ideal_temperature'] as num?)?.toDouble() ?? 30.0,
-      minPH:              6.0,
-      maxPH:              7.5,
       requiredLightHours: 6,
       optimalLux:         8000,
       isPredefined:       false,
@@ -92,8 +90,6 @@ class CropModel {
         maxSoilMoisture:    80,
         minTemperature:     15,
         maxTemperature:     30,
-        minPH:              6.0,
-        maxPH:              7.5,
         requiredLightHours: 6,
         optimalLux:         8000,
       );

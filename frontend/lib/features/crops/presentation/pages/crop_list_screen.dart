@@ -191,24 +191,10 @@ class CropListScreen extends StatelessWidget {
     );
   }
 
-  /// Calcula el estado global de los cultivos (mockup basado en ID)
+  /// Estado global basado en alertas reales (por ahora siempre óptimo
+  /// hasta integrar el conteo de alertas activas desde el backend).
   Map<String, int> _calculateGlobalStatus(List<CropEntity> crops) {
-    int needsAttention = 0;
-    int critical = 0;
-
-    for (var crop in crops) {
-      // Mockup: usar hash del ID para determinar estado
-      final hash = crop.id.hashCode % 100;
-
-      if (hash < 15) {
-        critical++; // 15% críticos
-      } else if (hash < 40) {
-        needsAttention++; // 25% necesita atención
-      }
-      // El resto está bien (60%)
-    }
-
-    return {'needsAttention': needsAttention, 'critical': critical};
+    return {'needsAttention': 0, 'critical': 0};
   }
 }
 
@@ -344,13 +330,6 @@ class _CropCard extends StatelessWidget {
           crop.getSensor(SensorType.soilMoisture),
           crop.profile.isSoilMoistureOptimal,
           Icons.water_drop,
-        ),
-        const SizedBox(width: 6),
-        _buildDotIndicator(
-          context,
-          crop.getSensor(SensorType.ph),
-          crop.profile.isPHOptimal,
-          Icons.science,
         ),
         const SizedBox(width: 6),
         _buildDotIndicator(

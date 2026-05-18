@@ -164,7 +164,7 @@ class _WizardStep2HardwareState extends State<WizardStep2Hardware> {
             ],
           ),
           const SizedBox(height: 12),
-          _buildBenefitRow('Monitorear temperatura, humedad, pH y luz'),
+          _buildBenefitRow('Monitorear temperatura, humedad y luz'),
           _buildBenefitRow('Controlar riego y luz LED automáticamente'),
           _buildBenefitRow('Recibir alertas cuando algo está mal'),
         ],
@@ -540,8 +540,6 @@ class _WizardStep2HardwareState extends State<WizardStep2Hardware> {
         return Icons.thermostat;
       case 'soilMoisture':
         return Icons.water_drop;
-      case 'ph':
-        return Icons.science;
       case 'light':
         return Icons.wb_sunny;
       default:

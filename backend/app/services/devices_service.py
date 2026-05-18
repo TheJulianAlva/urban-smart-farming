@@ -29,7 +29,7 @@ async def register_device(data: DeviceCreate, user: dict) -> dict:
         .select("id")
         .eq("id", str(data.crop_id))
         .eq("user_id", user["sub"])
-        .maybe_single()
+        .limit(1)
         .execute()
     )
     if not crop_check.data:
@@ -40,7 +40,7 @@ async def register_device(data: DeviceCreate, user: dict) -> dict:
         supabase_client.table("Device")
         .select("id")
         .eq("mac_address", data.mac_address)
-        .maybe_single()
+        .limit(1)
         .execute()
     )
     if mac_check.data:
@@ -82,7 +82,7 @@ async def delete_device(device_id: UUID, user: dict) -> None:
         .select("id")
         .eq("id", str(device_id))
         .in_("crop_id", crop_ids)
-        .maybe_single()
+        .limit(1)
         .execute()
     )
     if not device_check.data:

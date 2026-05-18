@@ -75,8 +75,6 @@ class SensorMiniCard extends StatelessWidget {
         return Icons.thermostat;
       case SensorType.soilMoisture:
         return Icons.water_drop;
-      case SensorType.ph:
-        return Icons.science;
       case SensorType.light:
         return Icons.wb_sunny;
     }

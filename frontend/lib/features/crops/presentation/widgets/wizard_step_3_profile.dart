@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:urban_smart_farming/core/di/di_container.dart';
 import 'package:urban_smart_farming/features/crops/domain/entities/crop_profile.dart';
+import 'package:urban_smart_farming/features/crops/presentation/bloc/profiles_bloc.dart';
+import 'package:urban_smart_farming/features/crops/presentation/bloc/profiles_event.dart';
+import 'package:urban_smart_farming/features/crops/presentation/bloc/profiles_state.dart';
 import 'package:urban_smart_farming/features/crops/presentation/widgets/profile_card.dart';
 
 /// Paso 3 del Wizard: Configuración de Perfil
@@ -23,13 +28,14 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
   bool _isExpertMode = false;
   CropProfile? _selectedProfile;
 
+  // BLoC propio para cargar perfiles reales de Supabase (con UUIDs válidos)
+  late final ProfilesBloc _profilesBloc;
+
   // Controladores para modo experto
   late TextEditingController _minMoistureController;
   late TextEditingController _maxMoistureController;
   late TextEditingController _minTempController;
   late TextEditingController _maxTempController;
-  late TextEditingController _minPHController;
-  late TextEditingController _maxPHController;
   late TextEditingController _lightHoursController;
   late TextEditingController _optimalLuxController;
 
@@ -38,6 +44,9 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
     super.initState();
     _isExpertMode = widget.initialIsExpertMode;
     _selectedProfile = widget.initialProfile;
+
+    // Cargar perfiles predefinidos + del usuario desde Supabase
+    _profilesBloc = getIt<ProfilesBloc>()..add(const LoadUserProfiles());
 
     // Inicializar controladores
     _minMoistureController = TextEditingController(
@@ -52,12 +61,6 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
     _maxTempController = TextEditingController(
       text: widget.initialProfile?.maxTemperature.toString() ?? '25',
     );
-    _minPHController = TextEditingController(
-      text: widget.initialProfile?.minPH.toString() ?? '6.0',
-    );
-    _maxPHController = TextEditingController(
-      text: widget.initialProfile?.maxPH.toString() ?? '7.0',
-    );
     _lightHoursController = TextEditingController(
       text: widget.initialProfile?.requiredLightHours.toString() ?? '8',
     );
@@ -68,12 +71,11 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
 
   @override
   void dispose() {
+    _profilesBloc.close();
     _minMoistureController.dispose();
     _maxMoistureController.dispose();
     _minTempController.dispose();
     _maxTempController.dispose();
-    _minPHController.dispose();
-    _maxPHController.dispose();
     _lightHoursController.dispose();
     _optimalLuxController.dispose();
     super.dispose();
@@ -92,15 +94,14 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
         maxSoilMoisture: double.tryParse(_maxMoistureController.text) ?? 70,
         minTemperature: double.tryParse(_minTempController.text) ?? 15,
         maxTemperature: double.tryParse(_maxTempController.text) ?? 25,
-        minPH: double.tryParse(_minPHController.text) ?? 6.0,
-        maxPH: double.tryParse(_maxPHController.text) ?? 7.0,
         requiredLightHours: int.tryParse(_lightHoursController.text) ?? 8,
         optimalLux: int.tryParse(_optimalLuxController.text) ?? 10000,
         isPredefined: false,
       );
     } else {
-      // Usar perfil seleccionado o default
-      profile = _selectedProfile ?? PredefinedProfiles.profiles.first;
+      // Usar perfil seleccionado — el usuario debe elegir uno antes de continuar
+      if (_selectedProfile == null) return;
+      profile = _selectedProfile!;
     }
 
     widget.onDataChanged(profile, _isExpertMode);
@@ -170,19 +171,58 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
         ),
         const SizedBox(height: 16),
 
-        // Lista de perfiles predefinidos
-        ...PredefinedProfiles.profiles.map((profile) {
-          return ProfileCard(
-            profile: profile,
-            isSelected: _selectedProfile?.id == profile.id,
-            onTap: () {
-              setState(() {
-                _selectedProfile = profile;
-                _notifyChanges();
-              });
-            },
-          );
-        }),
+        // Perfiles reales cargados desde Supabase (UUIDs válidos)
+        BlocBuilder<ProfilesBloc, ProfilesState>(
+          bloc: _profilesBloc,
+          builder: (context, state) {
+            if (state is ProfilesLoading || state is ProfilesInitial) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            if (state is ProfilesError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'Error al cargar perfiles: ${state.message}',
+                    style: TextStyle(color: Colors.red[700]),
+                  ),
+                ),
+              );
+            }
+
+            if (state is ProfilesLoaded) {
+              final profiles = state.userProfiles;
+              if (profiles.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('No hay perfiles disponibles.'),
+                );
+              }
+              return Column(
+                children: profiles.map((profile) {
+                  return ProfileCard(
+                    profile: profile,
+                    isSelected: _selectedProfile?.id == profile.id,
+                    onTap: () {
+                      setState(() {
+                        _selectedProfile = profile;
+                        _notifyChanges();
+                      });
+                    },
+                  );
+                }).toList(),
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
+        ),
       ],
     );
   }
@@ -268,44 +308,6 @@ class _WizardStep3ProfileState extends State<WizardStep3Profile> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   suffixText: '°C',
-                ),
-                onChanged: (_) => _notifyChanges(),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-
-        // pH del Suelo
-        Text('pH del Suelo', style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _minPHController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Mínimo',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  suffixText: 'pH',
-                ),
-                onChanged: (_) => _notifyChanges(),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: TextField(
-                controller: _maxPHController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Máximo',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  suffixText: 'pH',
                 ),
                 onChanged: (_) => _notifyChanges(),
               ),

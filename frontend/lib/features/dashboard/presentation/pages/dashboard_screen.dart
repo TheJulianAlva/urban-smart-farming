@@ -183,12 +183,6 @@ class _ProfileSection extends StatelessWidget {
               '${profile.minSoilMoisture.toStringAsFixed(0)} – ${profile.maxSoilMoisture.toStringAsFixed(0)} %',
         ),
         _ProfileParamRow(
-          icon: Icons.science,
-          label: 'pH del suelo',
-          value:
-              '${profile.minPH.toStringAsFixed(1)} – ${profile.maxPH.toStringAsFixed(1)}',
-        ),
-        _ProfileParamRow(
           icon: Icons.wb_sunny,
           label: 'Horas de luz diarias',
           value: '${profile.requiredLightHours} h',

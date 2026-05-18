@@ -180,13 +180,6 @@ class SensorGauge extends StatelessWidget {
         }
         return SensorStatus.critical;
 
-      case SensorType.ph:
-        if (profile.isPHOptimal(value)) return SensorStatus.optimal;
-        if (_isNearRange(value, profile.minPH, profile.maxPH)) {
-          return SensorStatus.warning;
-        }
-        return SensorStatus.critical;
-
       case SensorType.light:
         final optimalLux = profile.optimalLux.toDouble();
         if (value >= optimalLux * 0.8) return SensorStatus.optimal;
@@ -219,8 +212,6 @@ class SensorGauge extends StatelessWidget {
         return Icons.thermostat;
       case SensorType.soilMoisture:
         return Icons.water_drop;
-      case SensorType.ph:
-        return Icons.science;
       case SensorType.light:
         return Icons.wb_sunny;
     }
@@ -240,9 +231,6 @@ class SensorGauge extends StatelessWidget {
       case SensorType.soilMoisture:
         return (value / 100).clamp(0.0, 1.0);
 
-      case SensorType.ph:
-        return ((value - 0) / 14).clamp(0.0, 1.0);
-
       case SensorType.light:
         return (value / (profile.optimalLux * 1.2)).clamp(0.0, 1.0);
     }
@@ -254,8 +242,6 @@ class SensorGauge extends StatelessWidget {
         return 'Óptimo: ${profile.minTemperature.toStringAsFixed(0)} - ${profile.maxTemperature.toStringAsFixed(0)}°C';
       case SensorType.soilMoisture:
         return 'Óptimo: ${profile.minSoilMoisture.toStringAsFixed(0)} - ${profile.maxSoilMoisture.toStringAsFixed(0)}%';
-      case SensorType.ph:
-        return 'Óptimo: ${profile.minPH.toStringAsFixed(1)} - ${profile.maxPH.toStringAsFixed(1)}';
       case SensorType.light:
         return 'Óptimo: ${profile.optimalLux} lux';
     }

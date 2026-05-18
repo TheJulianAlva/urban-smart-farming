@@ -12,8 +12,7 @@ class AppConstants {
   static const Map<String, Map<String, double>> optimalRanges = {
     'temperature': {'min': 20.0, 'max': 28.0},
     'humidity': {'min': 50.0, 'max': 65.0},
-    'light': {'min': 400.0, 'max': 800.0},
-    'ph': {'min': 5.5, 'max': 7.0},
+    'light': {'min': 30.0, 'max': 90.0},   // porcentaje 0-100 (igual que el ESP32)
   };
 
   // Validaciones

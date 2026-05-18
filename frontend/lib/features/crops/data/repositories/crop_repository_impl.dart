@@ -27,10 +27,16 @@ class CropRepositoryImpl implements CropRepository {
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
-      final crops = (response as List<dynamic>).map((row) {
-        final rowMap = row as Map<String, dynamic>;
+      final crops = response.map((rowMap) {
         final entity = CropModel.fromJson(rowMap);
-        final deviceList = rowMap['Device'] as List<dynamic>?;
+        final deviceRaw = rowMap['Device'];
+        List<dynamic>? deviceList;
+        if (deviceRaw is List) {
+          deviceList = deviceRaw;
+        } else if (deviceRaw is Map) {
+          // PostgREST a veces devuelve el join como Map si es one-to-one
+          deviceList = [deviceRaw];
+        }
         final deviceJson = (deviceList != null && deviceList.isNotEmpty)
             ? deviceList.first as Map<String, dynamic>
             : null;
@@ -59,9 +65,14 @@ class CropRepositoryImpl implements CropRepository {
           .eq('user_id', userId)
           .single();
 
-      final rowMap = response;
-      final entity = CropModel.fromJson(rowMap);
-      final deviceList = rowMap['Device'] as List<dynamic>?;
+      final entity = CropModel.fromJson(response);
+      final deviceRaw = response['Device'];
+      List<dynamic>? deviceList;
+      if (deviceRaw is List) {
+        deviceList = deviceRaw;
+      } else if (deviceRaw is Map) {
+        deviceList = [deviceRaw];
+      }
       final deviceJson = (deviceList != null && deviceList.isNotEmpty)
           ? deviceList.first as Map<String, dynamic>
           : null;
@@ -137,8 +148,6 @@ class CropRepositoryImpl implements CropRepository {
             maxSoilMoisture: 80,
             minTemperature: 18,
             maxTemperature: 28,
-            minPH: 6.0,
-            maxPH: 7.5,
             requiredLightHours: 8,
             optimalLux: 10000,
           ),
@@ -270,27 +279,27 @@ class CropRepositoryImpl implements CropRepository {
       final userId = client.auth.currentUser?.id;
       if (userId == null) return const Left(AuthFailure('Usuario no autenticado'));
 
+      // Incluye perfiles predefinidos (creator_id IS NULL) + perfiles del usuario
       final response = await client
           .from('CropProfile')
           .select()
-          .eq('creator_id', userId)
+          .or('creator_id.eq.$userId,creator_id.is.null')
           .order('profile_name', ascending: true);
 
       final profiles = (response as List<dynamic>).map((row) {
         final json = row as Map<String, dynamic>;
+        final isPredefined = json['creator_id'] == null;
         return PlantProfile(
-          id: json['id'] as String,
+          id: json['id'] as String,       // UUID real de Supabase
           name: (json['profile_name'] as String?) ?? 'Sin nombre',
-          description: 'Perfil personalizado',
+          description: isPredefined ? 'Perfil predefinido' : 'Perfil personalizado',
           minSoilMoisture: (json['min_moisture'] as num?)?.toDouble() ?? 50.0,
           maxSoilMoisture: (json['max_moisture'] as num?)?.toDouble() ?? 80.0,
-          minTemperature: (json['ideal_temperature'] as num?)?.toDouble() ?? 15.0,
+          minTemperature: (json['ideal_temperature'] as num?)?.toDouble() ?? 20.0,
           maxTemperature: (json['ideal_temperature'] as num?)?.toDouble() ?? 30.0,
-          minPH: 6.0,
-          maxPH: 7.5,
           requiredLightHours: 6,
           optimalLux: 8000,
-          isPredefined: false,
+          isPredefined: isPredefined,
         );
       }).toList();
 

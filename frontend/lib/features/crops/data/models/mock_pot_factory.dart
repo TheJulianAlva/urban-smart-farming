@@ -55,17 +55,6 @@ class MockPotFactory {
         unit: '%',
       ),
 
-      // Sensor de pH (relativamente estable)
-      Sensor(
-        id: 'sensor-ph-${_generateHexId()}',
-        type: SensorType.ph,
-        currentValue: _getRealisticPH(),
-        lastReading: now.subtract(Duration(seconds: _random.nextInt(60))),
-        isActive: true,
-        unit: 'pH',
-        pin: 'A2',
-      ),
-
       // Sensor de luz (varía según hora)
       Sensor(
         id: 'sensor-light-${_generateHexId()}',
@@ -73,7 +62,7 @@ class MockPotFactory {
         currentValue: _getRealisticLight(hourOfDay),
         lastReading: now.subtract(Duration(seconds: _random.nextInt(60))),
         isActive: true,
-        unit: 'lux',
+        unit: '%',
         pin: 'A3',
       ),
     ];
@@ -124,25 +113,17 @@ class MockPotFactory {
     return (baseMoisture + variation).clamp(25.0, 90.0);
   }
 
-  /// pH realista (6.0-7.5)
-  static double _getRealisticPH() {
-    final basePH = 6.5;
-    final variation = (_random.nextDouble() - 0.5) * 1.0;
-    return (basePH + variation).clamp(5.5, 8.0);
-  }
-
-  /// Luz realista según hora del día (0-12000 lux)
+  /// Luz realista según hora del día (0-100 %)
   static double _getRealisticLight(int hour) {
     // Ciclo día/noche
     if (hour < 6 || hour > 20) {
-      return _random.nextDouble() * 100; // Luz artificial mínima
+      return (_random.nextDouble() * 10).clamp(0.0, 15.0); // Luz artificial mínima
     }
 
-    // Máximo al mediodía
-    final maxLux = 12000.0;
+    // Máximo al mediodía (~85-90 %)
     final variation = sin((hour - 6) * pi / 14);
-    final noise = (_random.nextDouble() - 0.5) * 1000;
-    return (maxLux * variation + noise).clamp(0.0, 15000.0);
+    final noise = (_random.nextDouble() - 0.5) * 8;
+    return (variation * 85.0 + noise).clamp(0.0, 100.0);
   }
 
   /// Genera un ID hexadecimal aleatorio

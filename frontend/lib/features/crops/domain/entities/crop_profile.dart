@@ -13,10 +13,6 @@ class PlantProfile {
   final double minTemperature; // Temperatura mínima en °C
   final double maxTemperature; // Temperatura máxima en °C
 
-  // Parámetros de pH del suelo
-  final double minPH; // pH mínimo
-  final double maxPH; // pH máximo
-
   // Parámetros de iluminación
   final int requiredLightHours; // Horas de luz requeridas por día
   final int optimalLux; // Lux óptimos
@@ -31,8 +27,6 @@ class PlantProfile {
     required this.maxSoilMoisture,
     required this.minTemperature,
     required this.maxTemperature,
-    required this.minPH,
-    required this.maxPH,
     required this.requiredLightHours,
     required this.optimalLux,
     this.isPredefined = false,
@@ -46,8 +40,6 @@ class PlantProfile {
     double? maxSoilMoisture,
     double? minTemperature,
     double? maxTemperature,
-    double? minPH,
-    double? maxPH,
     int? requiredLightHours,
     int? optimalLux,
     bool? isPredefined,
@@ -60,8 +52,6 @@ class PlantProfile {
       maxSoilMoisture: maxSoilMoisture ?? this.maxSoilMoisture,
       minTemperature: minTemperature ?? this.minTemperature,
       maxTemperature: maxTemperature ?? this.maxTemperature,
-      minPH: minPH ?? this.minPH,
-      maxPH: maxPH ?? this.maxPH,
       requiredLightHours: requiredLightHours ?? this.requiredLightHours,
       optimalLux: optimalLux ?? this.optimalLux,
       isPredefined: isPredefined ?? this.isPredefined,
@@ -75,7 +65,7 @@ class PlantProfile {
   bool isSoilMoistureOptimal(double moisture) =>
       moisture >= minSoilMoisture && moisture <= maxSoilMoisture;
 
-  bool isPHOptimal(double ph) => ph >= minPH && ph <= maxPH;
+
 
   bool isLightOptimal(int lux) => lux >= (optimalLux * 0.8);
 }
@@ -95,8 +85,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 80,
       minTemperature: 18,
       maxTemperature: 28,
-      minPH: 6.0,
-      maxPH: 7.0,
       requiredLightHours: 8,
       optimalLux: 10000,
       isPredefined: true,
@@ -110,8 +98,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 85,
       minTemperature: 15,
       maxTemperature: 20,
-      minPH: 6.0,
-      maxPH: 7.0,
       requiredLightHours: 6,
       optimalLux: 8000,
       isPredefined: true,
@@ -125,8 +111,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 70,
       minTemperature: 20,
       maxTemperature: 30,
-      minPH: 6.0,
-      maxPH: 7.5,
       requiredLightHours: 6,
       optimalLux: 8000,
       isPredefined: true,
@@ -140,8 +124,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 40,
       minTemperature: 25,
       maxTemperature: 35,
-      minPH: 6.5,
-      maxPH: 8.0,
       requiredLightHours: 10,
       optimalLux: 12000,
       isPredefined: true,
@@ -155,8 +137,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 75,
       minTemperature: 15,
       maxTemperature: 25,
-      minPH: 5.5,
-      maxPH: 6.5,
       requiredLightHours: 8,
       optimalLux: 10000,
       isPredefined: true,
@@ -170,8 +150,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 85,
       minTemperature: 15,
       maxTemperature: 25,
-      minPH: 6.0,
-      maxPH: 7.5,
       requiredLightHours: 4,
       optimalLux: 6000,
       isPredefined: true,
@@ -185,8 +163,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 75,
       minTemperature: 15,
       maxTemperature: 22,
-      minPH: 6.2,
-      maxPH: 6.8,
       requiredLightHours: 5,
       optimalLux: 7000,
       isPredefined: true,
@@ -199,8 +175,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 75,
       minTemperature: 20,
       maxTemperature: 30,
-      minPH: 6.0,
-      maxPH: 7.0,
       requiredLightHours: 8,
       optimalLux: 11000,
       isPredefined: true,
@@ -214,8 +188,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 80,
       minTemperature: 10,
       maxTemperature: 20,
-      minPH: 6.5,
-      maxPH: 7.5,
       requiredLightHours: 5,
       optimalLux: 7500,
       isPredefined: true,
@@ -229,8 +201,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 40,
       minTemperature: 15,
       maxTemperature: 30,
-      minPH: 6.0,
-      maxPH: 7.0,
       requiredLightHours: 6,
       optimalLux: 10000,
       isPredefined: true,
@@ -244,8 +214,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 70,
       minTemperature: 18,
       maxTemperature: 27,
-      minPH: 6.0,
-      maxPH: 7.5,
       requiredLightHours: 3,
       optimalLux: 4000,
       isPredefined: true,
@@ -259,8 +227,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 50,
       minTemperature: 15,
       maxTemperature: 28,
-      minPH: 6.0,
-      maxPH: 7.5,
       requiredLightHours: 7,
       optimalLux: 10000,
       isPredefined: true,
@@ -274,8 +240,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 75,
       minTemperature: 15,
       maxTemperature: 24,
-      minPH: 6.0,
-      maxPH: 7.0,
       requiredLightHours: 5,
       optimalLux: 7500,
       isPredefined: true,
@@ -289,8 +253,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 45,
       minTemperature: 15,
       maxTemperature: 30,
-      minPH: 6.5,
-      maxPH: 8.0,
       requiredLightHours: 8,
       optimalLux: 11000,
       isPredefined: true,
@@ -304,8 +266,6 @@ class PredefinedProfiles {
       maxSoilMoisture: 50,
       minTemperature: 15,
       maxTemperature: 28,
-      minPH: 6.0,
-      maxPH: 8.0,
       requiredLightHours: 6,
       optimalLux: 9000,
       isPredefined: true,

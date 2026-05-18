@@ -37,12 +37,6 @@ class SensorStatusIndicators extends StatelessWidget {
         const SizedBox(width: 8),
         _buildMiniIndicator(
           context,
-          crop.getSensor(SensorType.ph),
-          crop.profile.isPHOptimal,
-        ),
-        const SizedBox(width: 8),
-        _buildMiniIndicator(
-          context,
           crop.getSensor(SensorType.light),
           (value) => crop.profile.isLightOptimal(value.toInt()),
         ),
@@ -113,8 +107,6 @@ class SensorStatusIndicators extends StatelessWidget {
         return Icons.thermostat;
       case SensorType.soilMoisture:
         return Icons.water_drop;
-      case SensorType.ph:
-        return Icons.science;
       case SensorType.light:
         return Icons.wb_sunny;
     }

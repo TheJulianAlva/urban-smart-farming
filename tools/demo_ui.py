@@ -315,11 +315,18 @@ body{
 .wd1{width:12px;height:6px;left:20%}
 .wd2{width:8px;height:4px;left:55%}
 
+/* ── CONTENEDOR PLANTA ── */
+.plant-wrapper{
+  display:flex;flex-direction:column;align-items:center;
+  transform-origin:bottom center;
+  transition:transform 1s ease;
+}
+
 /* ── TALLO ── */
 .stem-wrap{
-  width:14px;height:130px;margin:0 auto;
-  position:relative;transform-origin:bottom center;
-  transition:transform 1s ease,filter 1s ease;
+  width:14px;height:130px;
+  position:relative;
+  transition:filter 1s ease;
 }
 .stem{
   width:100%;height:100%;
@@ -334,7 +341,7 @@ body{
   border-radius:50% 50% 50% 0;transition:filter 1s ease;
 }
 .leaf-l{left:-48px;top:42px;transform:rotate(-32deg);transform-origin:right center}
-.leaf-r{left:14px;top:70px;transform:rotate(32deg) scaleX(-1);transform-origin:left center}
+.leaf-r{left:14px;top:70px;transform:rotate(32deg);transform-origin:left center;border-radius:50% 50% 0 50%}
 
 /* ── FLOR ── */
 .flower{
@@ -396,10 +403,6 @@ body{
   25%{transform:rotate(3.5deg)}
   75%{transform:rotate(-3.5deg)}
 }
-@keyframes sway-heat{
-  0%,100%{transform:rotate(0deg)}
-  50%{transform:rotate(-5deg)}
-}
 @keyframes drip{
   0%{transform:translateY(0);opacity:.7}
   100%{transform:translateY(10px);opacity:0}
@@ -412,7 +415,7 @@ body{
 
 /* OPTIMAL */
 [data-state="optimal"]{background:radial-gradient(ellipse at 50% 30%,#0d2a1a 0%,#050e08 100%)}
-[data-state="optimal"] .stem-wrap{animation:sway 4s ease-in-out infinite}
+[data-state="optimal"] .plant-wrapper{animation:sway 4s ease-in-out infinite}
 [data-state="optimal"] .petal{background:linear-gradient(180deg,#fde68a,#f97316)}
 [data-state="optimal"] .flower-center{box-shadow:0 0 28px #fbbf24bb}
 [data-state="optimal"] .bg-sun{opacity:.55}
@@ -423,7 +426,8 @@ body{
 
 /* DROUGHT */
 [data-state="drought"]{background:radial-gradient(ellipse at 50% 20%,#2a1500 0%,#0e0500 100%)}
-[data-state="drought"] .stem-wrap{transform:rotate(5deg);filter:saturate(.5)}
+[data-state="drought"] .plant-wrapper{transform:rotate(5deg)}
+[data-state="drought"] .stem-wrap{filter:saturate(.5)}
 [data-state="drought"] .leaf{filter:saturate(.25) brightness(.7)}
 [data-state="drought"] .petal{
   background:linear-gradient(180deg,#d97706aa,#92400ecc);
@@ -438,7 +442,7 @@ body{
 
 /* IRRIGATION */
 [data-state="irrigation"]{background:radial-gradient(ellipse at 50% 30%,#0a1f35 0%,#030b14 100%)}
-[data-state="irrigation"] .stem-wrap{animation:sway 4s ease-in-out infinite}
+[data-state="irrigation"] .plant-wrapper{animation:sway 4s ease-in-out infinite}
 [data-state="irrigation"] .petal{background:linear-gradient(180deg,#fde68a,#f97316)}
 [data-state="irrigation"] .soil{background:#3b1e0a}
 [data-state="irrigation"] .wdrop{opacity:0}
@@ -447,7 +451,8 @@ body{
 
 /* HEAT */
 [data-state="heat"]{background:radial-gradient(ellipse at 50% 20%,#3b0000 0%,#150000 100%)}
-[data-state="heat"] .stem-wrap{transform:rotate(-3deg);filter:saturate(.65)}
+[data-state="heat"] .plant-wrapper{transform:rotate(-3deg)}
+[data-state="heat"] .stem-wrap{filter:saturate(.65)}
 [data-state="heat"] .leaf{filter:saturate(.5) brightness(.75)}
 [data-state="heat"] .petal{
   background:linear-gradient(180deg,#fca5a5,#ef4444);
@@ -478,7 +483,8 @@ body{
 /* DISEASE */
 [data-state="disease"]{background:radial-gradient(ellipse at 50% 30%,#1a0d2e 0%,#080410 100%)}
 [data-state="disease"] .flower{transform:rotate(-10deg)}
-[data-state="disease"] .stem-wrap{filter:saturate(.3);transform:rotate(3deg)}
+[data-state="disease"] .plant-wrapper{transform:rotate(3deg)}
+[data-state="disease"] .stem-wrap{filter:saturate(.3)}
 [data-state="disease"] .leaf{filter:saturate(.15) brightness(.6)}
 [data-state="disease"] .petal{
   background:linear-gradient(180deg,#a16207cc,#78350fcc);

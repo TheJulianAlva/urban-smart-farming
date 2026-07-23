@@ -43,7 +43,7 @@ if sys.platform == "win32":
 # CONFIGURACIÓN — Edita este valor con el UUID de tu Device
 # ──────────────────────────────────────────────────────────────
 DEVICE_UUID = "0e38f2f7-5093-41d0-bbbe-0f97a55e69f1"   # ← UUID de Supabase (Device.id)
-INTERVAL_SECONDS = 15                             # Frecuencia de publicación
+INTERVAL_SECONDS = 5                             # Frecuencia de publicación
 # ──────────────────────────────────────────────────────────────
 
 # Cargar credenciales desde el .env del backend
